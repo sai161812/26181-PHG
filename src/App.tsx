@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useCompanionStore } from './store/companionStore';
 import { Sidebar } from './app/Sidebar';
 import { TopBar } from './app/TopBar';
 import { OverviewPage } from './features/overview/OverviewPage';
@@ -11,12 +12,15 @@ import { EmergencyScaffold } from './features/emergency/EmergencyScaffold';
 import { PrivacyScaffold } from './features/privacy/PrivacyScaffold';
 import { ProfileScaffold } from './features/profile/ProfileScaffold';
 import { DemoControlsDrawer } from './features/demo/DemoControlsDrawer';
-import { ScenarioType } from './types/domain';
 
 export const App: React.FC = () => {
   const [activeDestination, setActiveDestination] = useState<string>('overview');
-  const [activeScenario, setActiveScenario] = useState<ScenarioType>('normal');
   const [isDemoControlsOpen, setIsDemoControlsOpen] = useState<boolean>(false);
+
+  // Initialize store and root simulator on mount
+  useEffect(() => {
+    useCompanionStore.getState().init();
+  }, []);
 
   // Router for destinations
   const renderCurrentView = () => {
@@ -65,7 +69,6 @@ export const App: React.FC = () => {
         {/* Top Status Bar (~64px) */}
         <TopBar
           activeDestination={activeDestination}
-          activeScenario={activeScenario}
           onOpenDemoControls={() => setIsDemoControlsOpen(true)}
         />
 
@@ -88,8 +91,6 @@ export const App: React.FC = () => {
       <DemoControlsDrawer
         isOpen={isDemoControlsOpen}
         onClose={() => setIsDemoControlsOpen(false)}
-        activeScenario={activeScenario}
-        onSelectScenario={(sc) => setActiveScenario(sc)}
       />
     </div>
   );

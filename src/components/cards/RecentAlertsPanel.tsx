@@ -1,10 +1,10 @@
 import React from 'react';
-import { AlertItem } from '../../types/domain';
+import { Alert } from '../../domain/types';
 import { AlertRow } from './AlertRow';
 import { ArrowRight, Bell } from 'lucide-react';
 
 export interface RecentAlertsPanelProps {
-  alerts: AlertItem[];
+  alerts: Alert[];
   onViewAllAlerts: () => void;
 }
 

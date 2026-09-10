@@ -9,13 +9,20 @@ import {
   Tooltip, 
   ReferenceLine 
 } from 'recharts';
+import { ChartDataPoint } from '../../domain/types';
 import { LIVE_CHART_DATA } from '../../data/fixtures';
 
 export interface ChartPanelProps {
   onOpenTrends?: () => void;
+  bufferHR?: ChartDataPoint[];
+  bufferSpO2?: ChartDataPoint[];
 }
 
-export const ChartPanel: React.FC<ChartPanelProps> = ({ onOpenTrends }) => {
+export const ChartPanel: React.FC<ChartPanelProps> = ({ 
+  onOpenTrends,
+  bufferHR,
+  bufferSpO2 
+}) => {
   const [selectedMetric, setSelectedMetric] = useState<'hr' | 'spo2'>('hr');
 
   const metricConfig = {
@@ -25,7 +32,7 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({ onOpenTrends }) => {
       color: 'var(--teal-600)',
       baseline: 72,
       baselineLabel: 'Resting baseline (72 BPM)',
-      domain: [60, 90]
+      domain: [50, 130]
     },
     spo2: {
       label: 'SpO₂ oxygen saturation',
@@ -33,16 +40,20 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({ onOpenTrends }) => {
       color: 'var(--risk-low)',
       baseline: 98,
       baselineLabel: 'Typical SpO₂ (98%)',
-      domain: [90, 100]
+      domain: [85, 100]
     }
   };
 
   const current = metricConfig[selectedMetric];
 
-  // Prepare data with the selected metric
-  const data = LIVE_CHART_DATA.map(d => ({
+  // Use real live store buffer if available, else fallback to initial fixtures
+  const activeBuffer = selectedMetric === 'hr' 
+    ? (bufferHR && bufferHR.length > 0 ? bufferHR : LIVE_CHART_DATA)
+    : (bufferSpO2 && bufferSpO2.length > 0 ? bufferSpO2 : LIVE_CHART_DATA.map(d => ({ ...d, value: 98 })));
+
+  const data = activeBuffer.map(d => ({
     time: d.time,
-    value: selectedMetric === 'hr' ? d.value : 98,
+    value: d.value,
     baseline: current.baseline
   }));
 

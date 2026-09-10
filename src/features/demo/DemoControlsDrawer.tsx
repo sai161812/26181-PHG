@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useCompanionStore } from '../../store/companionStore';
 import { Drawer } from '../../components/common/Drawer';
 import { Button } from '../../components/common/Button';
 import { Toggle } from '../../components/common/FormControls';
@@ -15,13 +16,11 @@ import {
   CloudLightning, 
   CheckCircle2 
 } from 'lucide-react';
-import { ScenarioType } from '../../types/domain';
+import { ScenarioType } from '../../domain/types';
 
 export interface DemoControlsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  activeScenario: ScenarioType;
-  onSelectScenario?: (scenario: ScenarioType) => void;
 }
 
 interface ScenarioOption {
@@ -46,7 +45,7 @@ const SCENARIO_OPTIONS: ScenarioOption[] = [
     id: 'heat_wave',
     title: 'Heat Wave Exposure',
     expectedScore: 'Score: 78 (High)',
-    description: 'Ambient 40°C, 78% humidity, HR +44% (108 BPM), body temp 37.7°C.',
+    description: 'Ambient 40°C, 78% humidity, HR +50% (108 BPM), body temp 37.7°C.',
     icon: Flame,
     tone: 'high'
   },
@@ -94,23 +93,26 @@ const SCENARIO_OPTIONS: ScenarioOption[] = [
 
 export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
   isOpen,
-  onClose,
-  activeScenario
+  onClose
 }) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [isSimulatedOffline, setIsSimulatedOffline] = useState(false);
-  const [selectedDemoScenario, setSelectedDemoScenario] = useState<ScenarioType>(activeScenario);
+  const activeScenario = useCompanionStore(s => s.demoState.scenarioId);
+  const isPaused = useCompanionStore(s => s.demoState.isPaused);
+  const isSimulatedOffline = useCompanionStore(s => s.settings.simulatedOffline);
+  const setScenario = useCompanionStore(s => s.setScenario);
+  const togglePause = useCompanionStore(s => s.togglePause);
+  const resetDemo = useCompanionStore(s => s.resetDemo);
+  const setSimulatedOffline = useCompanionStore(s => s.setSimulatedOffline);
 
   return (
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
       title="SIH Demo Controls"
-      subtitle="Evaluator presentation triggers & simulation orchestrator"
+      subtitle="Evaluator presentation triggers & real-time simulation orchestrator"
       width="460px"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* Phase 2 Binding Banner */}
+        {/* Active Engine State Banner */}
         <div
           style={{
             backgroundColor: 'var(--canvas)',
@@ -122,7 +124,7 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
             lineHeight: 1.45
           }}
         >
-          <strong style={{ color: 'var(--text)' }}>Phase 1 Visual Foundation:</strong> Controls layout initialized with all scenarios. The reactive root 2-second simulation engine and transition state will be bound in Phase 2.
+          <strong style={{ color: 'var(--text)' }}>Reactive Root Simulator Active:</strong> 2-second stream drives personal risk engine, baseline deviations, alerts, and belt telemetry in real time.
         </div>
 
         {/* Global Simulator State Controls */}
@@ -136,7 +138,7 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
               variant={isPaused ? 'primary' : 'outline'}
               size="sm"
               icon={isPaused ? <Play size={14} /> : <Pause size={14} />}
-              onClick={() => setIsPaused(!isPaused)}
+              onClick={togglePause}
               style={{ flex: 1 }}
             >
               {isPaused ? 'Resume simulator' : 'Pause simulator'}
@@ -146,7 +148,7 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
               variant="outline"
               size="sm"
               icon={<RotateCcw size={14} />}
-              onClick={() => setSelectedDemoScenario('normal')}
+              onClick={resetDemo}
               style={{ flex: 1 }}
             >
               Reset to Normal
@@ -155,9 +157,9 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
 
           <Toggle
             label="Simulate offline mode"
-            description="Forces environmental feeds into cached state while local monitoring continues"
+            description="Switches environmental snapshot to cached mode while local monitoring continues"
             checked={isSimulatedOffline}
-            onChange={setIsSimulatedOffline}
+            onChange={setSimulatedOffline}
           />
         </div>
 
@@ -175,12 +177,12 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {SCENARIO_OPTIONS.map((sc) => {
               const Icon = sc.icon;
-              const isSelected = selectedDemoScenario === sc.id;
+              const isSelected = activeScenario === sc.id;
 
               return (
                 <div
                   key={sc.id}
-                  onClick={() => setSelectedDemoScenario(sc.id)}
+                  onClick={() => setScenario(sc.id)}
                   style={{
                     padding: '12px 14px',
                     borderRadius: 'var(--radius-md)',

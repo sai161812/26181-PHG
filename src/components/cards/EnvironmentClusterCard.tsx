@@ -1,8 +1,8 @@
 import React from 'react';
-import { EnvironmentMetrics } from '../../types/domain';
+import { EnvironmentSnapshot } from '../../domain/types';
 
 export interface EnvironmentClusterCardProps {
-  metrics: EnvironmentMetrics;
+  metrics: EnvironmentSnapshot;
   onClick?: () => void;
   flex?: number | string;
 }

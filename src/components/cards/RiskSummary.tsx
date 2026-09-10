@@ -1,11 +1,11 @@
 import React from 'react';
-import { PrototypeRiskAssessment } from '../../types/domain';
+import { RiskAssessment } from '../../domain/types';
 import { StatusBadge } from '../common/StatusBadge';
 import { Button } from '../common/Button';
 import { ArrowRight, Info } from 'lucide-react';
 
 export interface RiskSummaryProps {
-  assessment: PrototypeRiskAssessment;
+  assessment: RiskAssessment;
   onViewAnalysis: () => void;
 }
 

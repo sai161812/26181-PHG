@@ -1,12 +1,6 @@
 import React from 'react';
-import { 
-  DEMO_PROFILE, 
-  CURRENT_VITALS, 
-  CURRENT_ENVIRONMENT, 
-  CURRENT_RISK_ASSESSMENT, 
-  CURRENT_BELT_STATUS, 
-  RECENT_ALERTS 
-} from '../../data/fixtures';
+import { useCompanionStore } from '../../store/companionStore';
+import { BaselineManager } from '../../domain/managers/baselineManager';
 import { RiskSummary } from '../../components/cards/RiskSummary';
 import { BeltSummaryCard } from '../../components/cards/BeltSummaryCard';
 import { MetricCard } from '../../components/cards/MetricCard';
@@ -22,6 +16,49 @@ export interface OverviewPageProps {
 }
 
 export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
+  // Bind directly to unified reactive Zustand store
+  const profile = useCompanionStore(s => s.profile);
+  const baseline = useCompanionStore(s => s.baseline);
+  const currentReading = useCompanionStore(s => s.currentReading);
+  const environment = useCompanionStore(s => s.environment);
+  const riskAssessment = useCompanionStore(s => s.riskAssessment);
+  const deviceStatus = useCompanionStore(s => s.deviceStatus);
+  const alerts = useCompanionStore(s => s.alerts);
+  const liveBufferHR = useCompanionStore(s => s.liveBufferHR);
+  const liveBufferSpO2 = useCompanionStore(s => s.liveBufferSpO2);
+  const demoState = useCompanionStore(s => s.demoState);
+
+  // Compute live deviations
+  const hrVal = currentReading.hr ?? baseline.restingHR;
+  const hrDeviationPct = BaselineManager.calculateHRDeviationPct(hrVal, baseline.restingHR);
+  const hrDeltaText = hrDeviationPct === 0 
+    ? '0% from baseline' 
+    : `${hrDeviationPct > 0 ? '+' : ''}${hrDeviationPct}% from baseline`;
+  const hrTone = hrDeviationPct > 35 ? 'critical' : hrDeviationPct > 20 ? 'warning' : 'neutral';
+
+  const spo2Val = currentReading.spo2 ?? baseline.spo2;
+  const spo2DiffPp = BaselineManager.calculateSpO2DiffPp(spo2Val, baseline.spo2);
+  const spo2DeltaText = spo2DiffPp === 0
+    ? '0 pp from baseline'
+    : `${spo2DiffPp > 0 ? '-' : '+'}${Math.abs(spo2DiffPp)} pp from baseline`;
+  const spo2Tone = spo2DiffPp >= 3 ? 'critical' : 'neutral';
+
+  const tempVal = currentReading.bodyTemperatureC ?? baseline.bodyTemperatureC;
+  const tempDelta = BaselineManager.calculateTempDelta(tempVal, baseline.bodyTemperatureC);
+  const tempDeltaText = tempDelta === 0 
+    ? 'Nominal' 
+    : `${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C from baseline`;
+  const tempTone = tempDelta >= 0.8 ? 'warning' : 'neutral';
+
+  const activityMin = currentReading.activityMinutes ?? 30;
+
+  // Extract recent sparkline arrays from live buffers
+  const hrSparkline = liveBufferHR.slice(-10).map(p => p.value);
+  const spo2Sparkline = liveBufferSpO2.slice(-10).map(p => p.value);
+
+  // System status tone based on overall score
+  const systemTone = riskAssessment.severity;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* ROW 1: Safety Context & Status */}
@@ -36,10 +73,10 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
       >
         <div>
           <h2 style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text)', margin: 0, lineHeight: 1.2 }}>
-            Good evening, {DEMO_PROFILE.name}
+            Good evening, {profile.name}
           </h2>
           <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            Monitoring from {CURRENT_BELT_STATUS.deviceName}
+            Monitoring from {deviceStatus.name} • {deviceStatus.connection === 'connected' ? 'Streaming' : 'Disconnected'}
           </div>
         </div>
 
@@ -58,7 +95,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             }}
           >
             <Cpu size={14} color="var(--teal-700)" />
-            <span>Local laptop engine</span>
+            <span>Local demo engine</span>
           </div>
 
           <div
@@ -75,10 +112,14 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             }}
           >
             <Clock size={14} color="var(--text-tertiary)" />
-            <span>Last reading: Just now</span>
+            <span>Last reading: {demoState.isPaused ? 'Paused' : 'Just now'}</span>
           </div>
 
-          <StatusBadge tone="low" label="System Nominal" pulse />
+          <StatusBadge 
+            tone={systemTone} 
+            label={systemTone === 'low' ? 'System Nominal' : `${systemTone.toUpperCase()} RISK`} 
+            pulse 
+          />
         </div>
       </div>
 
@@ -92,12 +133,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
         }}
       >
         <RiskSummary
-          assessment={CURRENT_RISK_ASSESSMENT}
+          assessment={riskAssessment}
           onViewAnalysis={() => onNavigate('ai-analysis')}
         />
 
         <BeltSummaryCard
-          beltStatus={CURRENT_BELT_STATUS}
+          beltStatus={{
+            deviceName: deviceStatus.name,
+            connectionState: deviceStatus.connection,
+            batteryPct: deviceStatus.batteryPct,
+            motionStatus: deviceStatus.motionStatus,
+            protectionState: deviceStatus.protectionState,
+            components: deviceStatus.components
+          }}
           onOpenDevices={() => onNavigate('devices')}
         />
       </div>
@@ -113,59 +161,59 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
       >
         {/* Heart Rate Card */}
         <MetricCard
-          title={CURRENT_VITALS.hr.name}
-          value={CURRENT_VITALS.hr.value}
-          unit={CURRENT_VITALS.hr.unit}
-          subtext="Baseline: 72 BPM (resting median)"
-          deltaText={CURRENT_VITALS.hr.deltaText}
-          deltaTone="neutral"
-          sparkline={CURRENT_VITALS.hr.sparkline}
+          title="Heart rate"
+          value={hrVal}
+          unit="BPM"
+          subtext={`Baseline: ${baseline.restingHR} BPM (${baseline.source})`}
+          deltaText={hrDeltaText}
+          deltaTone={hrTone}
+          sparkline={hrSparkline.length > 1 ? hrSparkline : [71, 72, 73, 72, hrVal]}
           onClick={() => onNavigate('health')}
           flex={1}
         />
 
         {/* SpO2 Card */}
         <MetricCard
-          title={CURRENT_VITALS.spo2.name}
-          value={CURRENT_VITALS.spo2.value}
-          unit={CURRENT_VITALS.spo2.unit}
-          subtext="Baseline: 98% optimal"
-          deltaText={CURRENT_VITALS.spo2.deltaText}
-          deltaTone="neutral"
-          sparkline={CURRENT_VITALS.spo2.sparkline}
+          title="SpO₂ oxygen"
+          value={spo2Val}
+          unit="%"
+          subtext={`Baseline: ${baseline.spo2}% optimal`}
+          deltaText={spo2DeltaText}
+          deltaTone={spo2Tone}
+          sparkline={spo2Sparkline.length > 1 ? spo2Sparkline : [98, 98, 97, 98, spo2Val]}
           onClick={() => onNavigate('health')}
           flex={1}
         />
 
         {/* Body Temp Card */}
         <MetricCard
-          title={CURRENT_VITALS.temp.name}
-          value={CURRENT_VITALS.temp.value}
-          unit={CURRENT_VITALS.temp.unit}
-          subtext="Baseline: 36.7°C (constant)"
-          deltaText={CURRENT_VITALS.temp.deltaText}
-          deltaTone="neutral"
-          sparkline={CURRENT_VITALS.temp.sparkline}
+          title="Body temperature"
+          value={tempVal.toFixed(1)}
+          unit="°C"
+          subtext={`Baseline: ${baseline.bodyTemperatureC}°C`}
+          deltaText={tempDeltaText}
+          deltaTone={tempTone}
+          sparkline={[36.6, 36.7, 36.7, tempVal]}
           onClick={() => onNavigate('health')}
           flex={1}
         />
 
         {/* Daily Activity Card */}
         <MetricCard
-          title={CURRENT_VITALS.activity.name}
-          value={CURRENT_VITALS.activity.value}
-          unit={CURRENT_VITALS.activity.unit}
-          subtext="Goal: 45 min moderate movement"
-          deltaText={CURRENT_VITALS.activity.deltaText}
+          title="Daily activity"
+          value={activityMin}
+          unit="min"
+          subtext={`State: ${currentReading.activity.toUpperCase()}`}
+          deltaText={`${currentReading.activity} exertion`}
           deltaTone="neutral"
-          sparkline={CURRENT_VITALS.activity.sparkline}
+          sparkline={[10, 20, 25, activityMin]}
           onClick={() => onNavigate('health')}
           flex={1}
         />
 
         {/* Environment Cluster Card (Wider) */}
         <EnvironmentClusterCard
-          metrics={CURRENT_ENVIRONMENT}
+          metrics={environment}
           onClick={() => onNavigate('environment')}
           flex={1.4}
         />
@@ -180,12 +228,16 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           alignItems: 'stretch'
         }}
       >
-        {/* Left: Clean Live Chart */}
-        <ChartPanel onOpenTrends={() => onNavigate('health')} />
+        {/* Left: Clean Live Chart with real buffers */}
+        <ChartPanel 
+          onOpenTrends={() => onNavigate('health')}
+          bufferHR={liveBufferHR}
+          bufferSpO2={liveBufferSpO2}
+        />
 
         {/* Right: Recent Alerts */}
         <RecentAlertsPanel
-          alerts={RECENT_ALERTS}
+          alerts={alerts}
           onViewAllAlerts={() => onNavigate('alerts')}
         />
       </div>

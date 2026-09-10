@@ -1,14 +1,25 @@
 import React from 'react';
-import { AlertItem } from '../../types/domain';
+import { Alert } from '../../domain/types';
 import { StatusBadge } from '../common/StatusBadge';
 import { Clock } from 'lucide-react';
 
 export interface AlertRowProps {
-  alert: AlertItem;
+  alert: Alert | {
+    id: string;
+    severity: Alert['severity'];
+    title: string;
+    reason: string;
+    timestamp?: string;
+    createdAt?: number;
+  };
   onClick?: () => void;
 }
 
 export const AlertRow: React.FC<AlertRowProps> = ({ alert, onClick }) => {
+  const timeStr = (alert as any).timestamp 
+    ? (alert as any).timestamp 
+    : (alert.createdAt ? new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now');
+
   return (
     <div
       onClick={onClick}
@@ -33,7 +44,7 @@ export const AlertRow: React.FC<AlertRowProps> = ({ alert, onClick }) => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
           <Clock size={12} />
-          <span>{alert.timestamp}</span>
+          <span>{timeStr}</span>
         </div>
       </div>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
