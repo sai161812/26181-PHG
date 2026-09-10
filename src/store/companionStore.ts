@@ -370,9 +370,11 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
       }));
     },
 
-    setSimulatedOffline: (offline: boolean) => {
+    setSimulatedOffline: async (offline: boolean) => {
       environmentProvider.setOffline(offline);
+      const updatedEnv = await environmentProvider.getSnapshot();
       set(state => ({
+        environment: updatedEnv,
         settings: {
           ...state.settings,
           simulatedOffline: offline

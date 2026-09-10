@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCompanionStore } from '../../store/companionStore';
+import { useConnectivityAndPWA } from '../../hooks/useConnectivityAndPWA';
 import { 
   ShieldCheck, 
   Lock, 
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const PrivacyPage: React.FC = () => {
+  const { isAppCacheReady } = useConnectivityAndPWA();
   const { 
     settings, 
     profile, 
@@ -424,13 +426,13 @@ export const PrivacyPage: React.FC = () => {
 
           <div>
             <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>
-              Service Worker & CacheStorage
+              Service Worker & PWA CacheStorage
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--risk-moderate)', fontWeight: 700, marginTop: '2px' }}>
-              ◐ Bound for Phase 7 Activation
+            <div style={{ fontSize: '12px', color: isAppCacheReady ? 'var(--teal-700)' : 'var(--risk-moderate)', fontWeight: 700, marginTop: '2px' }}>
+              {isAppCacheReady ? '● Active & Ready for Offline Reload' : '◐ Initializing Service Worker Cache...'}
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Offline PWA caching and static asset pre-caching will be fully activated in Phase 7 implementation.
+              All routes, application chunks, local vector icons, and styling are precached locally. The workstation reloads and runs without internet.
             </div>
           </div>
         </div>

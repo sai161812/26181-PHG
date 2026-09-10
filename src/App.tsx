@@ -14,10 +14,13 @@ import { PrivacyPage } from './features/privacy/PrivacyPage';
 import { ProfilePage } from './features/profile/ProfilePage';
 import { OnboardingModal } from './features/onboarding/OnboardingModal';
 import { DemoControlsDrawer } from './features/demo/DemoControlsDrawer';
+import { useConnectivityAndPWA } from './hooks/useConnectivityAndPWA';
 
 export const App: React.FC = () => {
   const [activeDestination, setActiveDestination] = useState<string>('overview');
   const [isDemoControlsOpen, setIsDemoControlsOpen] = useState<boolean>(false);
+  const { needRefresh, updateApp } = useConnectivityAndPWA();
+  const [dismissUpdateBanner, setDismissUpdateBanner] = useState<boolean>(false);
 
   // Initialize store and root simulator on mount
   useEffect(() => {
@@ -102,6 +105,62 @@ export const App: React.FC = () => {
 
       {/* Four-Step Onboarding Wizard Modal */}
       <OnboardingModal />
+
+      {/* User-Controlled Presentation Update Banner (Prevents surprise reloads during live demo) */}
+      {needRefresh && !dismissUpdateBanner && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9000,
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--teal-700)',
+            borderRadius: '10px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px'
+          }}
+        >
+          <div style={{ fontSize: '13px', color: 'var(--text)' }}>
+            <strong>Workstation Update Cached:</strong> Ready to apply.
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={updateApp}
+              style={{
+                padding: '6px 12px',
+                backgroundColor: 'var(--teal-700)',
+                color: '#FFFFFF',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              Reload When Ready
+            </button>
+            <button
+              type="button"
+              onClick={() => setDismissUpdateBanner(true)}
+              style={{
+                padding: '6px 10px',
+                backgroundColor: 'var(--surface-muted)',
+                color: 'var(--text-secondary)',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

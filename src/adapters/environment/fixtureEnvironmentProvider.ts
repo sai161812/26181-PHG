@@ -5,19 +5,39 @@ import { SCENARIO_SETPOINTS } from '../../data/scenarios';
 export class FixtureEnvironmentProvider implements EnvironmentProvider {
   private currentSnapshot: EnvironmentSnapshot;
   private isOffline = false;
+  private cachedExternalSnapshot: EnvironmentSnapshot | null = null;
+  private isSyntheticOfflineInjection = false;
 
   constructor(initialScenario: ScenarioType = 'normal') {
     this.currentSnapshot = this.buildSnapshotForScenario(initialScenario);
   }
 
   public async getSnapshot(): Promise<EnvironmentSnapshot> {
+    const now = Date.now();
+
     if (this.isOffline) {
+      // Offline: retain frozen timestamps without advancing update timestamp
+      const isExpired = now > this.currentSnapshot.validUntil;
+      const sourceLabel = this.isSyntheticOfflineInjection
+        ? 'Synthetic demo context (Simulated locally)'
+        : (isExpired 
+            ? 'Outdated — current conditions unavailable' 
+            : (this.currentSnapshot.source.includes('Cached') 
+                ? this.currentSnapshot.source 
+                : `${this.currentSnapshot.source} (Cached)`));
+
       return {
         ...this.currentSnapshot,
-        source: 'Cached environmental context (Offline mode)'
+        source: sourceLabel
       };
     }
-    return { ...this.currentSnapshot, observedAt: Date.now() };
+
+    // Online: update observedAt and validUntil
+    return {
+      ...this.currentSnapshot,
+      observedAt: now,
+      validUntil: now + 15 * 60 * 1000
+    };
   }
 
   public setSimulatedScenario(snapshot: EnvironmentSnapshot): void {
@@ -25,15 +45,43 @@ export class FixtureEnvironmentProvider implements EnvironmentProvider {
   }
 
   public setScenario(scenario: ScenarioType): void {
-    this.currentSnapshot = this.buildSnapshotForScenario(scenario);
+    const newSnapshot = this.buildSnapshotForScenario(scenario);
+    if (this.isOffline) {
+      // Section 8: "A scenario triggered while offline can inject synthetic demo context so judges can still explore the UI. Label it 'Simulated locally'; do not claim a new real disaster bulletin arrived without a network."
+      this.isSyntheticOfflineInjection = true;
+      this.currentSnapshot = {
+        ...newSnapshot,
+        source: 'Synthetic demo context (Simulated locally)'
+      };
+    } else {
+      this.isSyntheticOfflineInjection = false;
+      this.currentSnapshot = newSnapshot;
+    }
   }
 
   public setOffline(offline: boolean): void {
+    if (offline && !this.isOffline) {
+      // Freezing current external snapshot
+      this.cachedExternalSnapshot = { ...this.currentSnapshot };
+      this.isSyntheticOfflineInjection = false;
+    } else if (!offline && this.isOffline) {
+      // Restoring connectivity: advance observedAt
+      this.isSyntheticOfflineInjection = false;
+      this.cachedExternalSnapshot = null;
+    }
     this.isOffline = offline;
   }
 
   public getIsOffline(): boolean {
     return this.isOffline;
+  }
+
+  public getCachedExternalSnapshot(): EnvironmentSnapshot | null {
+    return this.cachedExternalSnapshot;
+  }
+
+  public isSyntheticInjection(): boolean {
+    return this.isSyntheticOfflineInjection;
   }
 
   private buildSnapshotForScenario(scenario: ScenarioType): EnvironmentSnapshot {

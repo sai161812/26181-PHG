@@ -7,15 +7,16 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      registerType: 'prompt',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'Health Companion - SIH26181',
         short_name: 'HealthCompanion',
         description: 'Desktop Health Companion for Integrated AI Health Belt',
-        theme_color: '#0F766E',
-        background_color: '#F5F7F6',
+        theme_color: '#0E6B62',
+        background_color: '#F4F6F5',
         display: 'standalone',
+        orientation: 'landscape',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -26,11 +27,19 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          },
+          {
+            src: 'mask-icon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'maskable'
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        navigateFallback: 'index.html',
+        cleanupOutdatedCaches: true
       }
     })
   ],
