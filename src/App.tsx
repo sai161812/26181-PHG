@@ -7,8 +7,9 @@ import { HealthPage } from './features/health/HealthPage';
 import { AnalysisPage } from './features/analysis/AnalysisPage';
 import { EnvironmentPage } from './features/environment/EnvironmentPage';
 import { AlertsPage } from './features/alerts/AlertsPage';
-import { DevicesScaffold } from './features/devices/DevicesScaffold';
-import { EmergencyScaffold } from './features/emergency/EmergencyScaffold';
+import { DevicesPage } from './features/devices/DevicesPage';
+import { EmergencyPage } from './features/emergency/EmergencyPage';
+import { FallCheckInModal } from './features/emergency/FallCheckInModal';
 import { PrivacyScaffold } from './features/privacy/PrivacyScaffold';
 import { ProfileScaffold } from './features/profile/ProfileScaffold';
 import { DemoControlsDrawer } from './features/demo/DemoControlsDrawer';
@@ -36,9 +37,9 @@ export const App: React.FC = () => {
       case 'alerts':
         return <AlertsPage onNavigate={(dest) => setActiveDestination(dest)} />;
       case 'devices':
-        return <DevicesScaffold />;
+        return <DevicesPage />;
       case 'emergency':
-        return <EmergencyScaffold />;
+        return <EmergencyPage />;
       case 'privacy':
         return <PrivacyScaffold />;
       case 'profile-settings':
@@ -91,6 +92,11 @@ export const App: React.FC = () => {
       <DemoControlsDrawer
         isOpen={isDemoControlsOpen}
         onClose={() => setIsDemoControlsOpen(false)}
+      />
+
+      {/* Global Fall Check-In Modal ("Are you okay?" 20-second escalation countdown) */}
+      <FallCheckInModal
+        onNavigateToEmergency={() => setActiveDestination('emergency')}
       />
     </div>
   );

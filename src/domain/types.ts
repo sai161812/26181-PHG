@@ -182,6 +182,7 @@ export interface SOSRecord {
     phone: string;
   };
   location: string | null;
+  locationProvenance?: 'Demo location' | 'Browser location' | 'Last known location' | 'Not shared';
   vitalsSnapshot: {
     hr: number | null;
     spo2: number | null;
@@ -190,6 +191,14 @@ export interface SOSRecord {
   riskScore: number | null;
   severity: RiskSeverity | null;
   status: 'prepared_demonstration_only';
+  triggerType?: 'manual' | 'fall_checkin_escalation' | 'fall_checkin_timeout';
+}
+
+export interface FallCheckInState {
+  isOpen: boolean;
+  incidentId: string | null;
+  deadline: number | null;
+  userResponse: 'pending' | 'ok' | 'need_help' | 'timeout';
 }
 
 export interface Settings {

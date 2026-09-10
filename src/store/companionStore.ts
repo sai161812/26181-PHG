@@ -10,13 +10,16 @@ import {
   Settings, 
   DemoState, 
   ScenarioType,
-  ChartDataPoint
+  ChartDataPoint,
+  SOSRecord,
+  FallCheckInState
 } from '../domain/types';
 import { DemoSensorAdapter } from '../adapters/sensors/demoSensorAdapter';
 import { FixtureEnvironmentProvider } from '../adapters/environment/fixtureEnvironmentProvider';
 import { RuleBasedRiskEngine } from '../domain/risk/ruleEngine';
 import { AlertManager } from '../domain/managers/alertManager';
 import { DeviceManager } from '../domain/managers/deviceManager';
+import { EmergencyManager } from '../domain/managers/emergencyManager';
 import { BaselineManager } from '../domain/managers/baselineManager';
 import { LocalStorageRepository } from '../storage/localRepository';
 import { generateDeterministic30DayHistory } from '../data/historyGenerator';
@@ -41,6 +44,11 @@ export interface CompanionState {
   activeHealthTab: 'live' | 'baseline' | 'trends';
   selectedTrendMetric: 'hr' | 'spo2' | 'temp' | 'activity' | 'sleep' | 'risk';
 
+  // Phase 5 State: Fall Check-In, SOS & Devices
+  fallCheckIn: FallCheckInState;
+  preparedSOSList: SOSRecord[];
+  isPairingInProgress: boolean;
+
   // Actions
   init: () => void;
   setActiveHealthTab: (tab: 'live' | 'baseline' | 'trends') => void;
@@ -56,6 +64,16 @@ export interface CompanionState {
   recalculateBaseline: (resetManualHR?: boolean) => void;
   setManualRestingHR: (hr: number) => void;
   updateSharingChoices: (choices: Partial<Settings['sharingChoices']>) => void;
+
+  // Phase 5 Actions
+  respondFallCheckIn: (response: 'ok' | 'need_help') => void;
+  handleFallTimeout: () => void;
+  cancelFallCheckIn: () => void;
+  prepareManualSOS: (incidentId?: string) => { success: boolean; reason?: string; record?: SOSRecord };
+  connectDemoBelt: () => Promise<void>;
+  disconnectDemoBelt: () => Promise<void>;
+  resetProtectionSequence: () => void;
+  clearPreparedSOS: () => void;
 }
 
 // Singletons for root-owned execution
@@ -148,6 +166,14 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
     riskAssessment: initialAssessment,
     alerts: INITIAL_DEMO_ALERTS,
     deviceStatus: DeviceManager.createDefaultDeviceStatus(),
+    fallCheckIn: {
+      isOpen: false,
+      incidentId: null,
+      deadline: null,
+      userResponse: 'pending'
+    },
+    preparedSOSList: [],
+    isPairingInProgress: false,
     settings: {
       schemaVersion: 1,
       onboardingComplete: true,
@@ -186,7 +212,8 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
           baseline: persisted.baseline,
           settings: persisted.settings,
           alerts: persisted.recentAlerts || [],
-          deviceStatus: persisted.deviceStatus || DeviceManager.createDefaultDeviceStatus()
+          deviceStatus: persisted.deviceStatus || DeviceManager.createDefaultDeviceStatus(),
+          preparedSOSList: persisted.preparedSOS || []
         });
       }
       set({ isHydrated: true });
@@ -265,6 +292,7 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
             settings: state.settings,
             recentAlerts: updatedAlerts,
             deviceStatus: state.deviceStatus,
+            preparedSOS: state.preparedSOSList,
             lastUpdated: Date.now()
           });
         });
@@ -283,17 +311,35 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
       sensorAdapter.setScenario(scenario);
       environmentProvider.setScenario(scenario);
 
-      // If scenario is fall, trigger protection timeline
+      // If scenario is fall, trigger protection timeline and open "Are you okay?" check-in
       let nextDeviceStatus = state.deviceStatus;
+      let nextFallCheckIn = state.fallCheckIn;
+
       if (scenario === 'fall') {
         nextDeviceStatus = DeviceManager.triggerFallProtectionSequence(state.deviceStatus);
-      } else if (state.deviceStatus.protectionState !== 'ready') {
-        nextDeviceStatus = DeviceManager.resetProtectionSequence(state.deviceStatus);
+        nextFallCheckIn = {
+          isOpen: true,
+          incidentId: `inc-fall-${Date.now()}`,
+          deadline: Date.now() + 20000, // 20-second demo escalation countdown
+          userResponse: 'pending'
+        };
+      } else {
+        // Switching away cancels pending check-in and restores ready protection
+        nextFallCheckIn = {
+          isOpen: false,
+          incidentId: null,
+          deadline: null,
+          userResponse: 'pending'
+        };
+        if (state.deviceStatus.protectionState !== 'ready') {
+          nextDeviceStatus = DeviceManager.resetProtectionSequence(state.deviceStatus);
+        }
       }
 
       set({
         alerts: updatedAlerts,
         deviceStatus: nextDeviceStatus,
+        fallCheckIn: nextFallCheckIn,
         demoState: {
           ...state.demoState,
           scenarioId: scenario,
@@ -379,6 +425,13 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
         riskAssessment: resetAssessment,
         alerts: [],
         deviceStatus: DeviceManager.createDefaultDeviceStatus(),
+        fallCheckIn: {
+          isOpen: false,
+          incidentId: null,
+          deadline: null,
+          userResponse: 'pending'
+        },
+        preparedSOSList: [],
         demoState: {
           ...state.demoState,
           scenarioId: 'normal',
@@ -477,6 +530,164 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
           sharingChoices: { ...state.settings.sharingChoices, ...choices }
         }
       }));
+    },
+
+    // Phase 5 Actions
+    respondFallCheckIn: (response: 'ok' | 'need_help') => {
+      const state = get();
+      if (!state.fallCheckIn.isOpen) return;
+
+      if (response === 'ok') {
+        // "I'm OK cancels the timer and records user acknowledgement. It does not erase the belt protection event."
+        set({
+          fallCheckIn: {
+            ...state.fallCheckIn,
+            isOpen: false,
+            userResponse: 'ok',
+            deadline: null
+          }
+        });
+      } else {
+        // "Need Help opens the SOS confirmation immediately / prepares SOS payload"
+        const incidentId = state.fallCheckIn.incidentId || `inc-fall-${Date.now()}`;
+        const isContactValid = EmergencyManager.isContactValid(state.profile.emergencyContact);
+
+        if (isContactValid) {
+          const sosRecord = EmergencyManager.prepareSOSPayload(
+            state.profile,
+            state.settings.sharingChoices,
+            state.currentReading,
+            state.environment,
+            state.riskAssessment,
+            incidentId,
+            'fall_checkin_escalation'
+          );
+          const filtered = state.preparedSOSList.filter(s => s.incidentId !== incidentId);
+          set({
+            fallCheckIn: {
+              ...state.fallCheckIn,
+              isOpen: false,
+              userResponse: 'need_help',
+              deadline: null
+            },
+            preparedSOSList: [sosRecord, ...filtered]
+          });
+        } else {
+          set({
+            fallCheckIn: {
+              ...state.fallCheckIn,
+              isOpen: false,
+              userResponse: 'need_help',
+              deadline: null
+            }
+          });
+        }
+      }
+    },
+
+    handleFallTimeout: () => {
+      const state = get();
+      if (!state.fallCheckIn.isOpen) return;
+      const incidentId = state.fallCheckIn.incidentId || `inc-fall-${Date.now()}`;
+
+      const isContactValid = EmergencyManager.isContactValid(state.profile.emergencyContact);
+      if (isContactValid) {
+        const sosRecord = EmergencyManager.prepareSOSPayload(
+          state.profile,
+          state.settings.sharingChoices,
+          state.currentReading,
+          state.environment,
+          state.riskAssessment,
+          incidentId,
+          'fall_checkin_timeout'
+        );
+        const filtered = state.preparedSOSList.filter(s => s.incidentId !== incidentId);
+        set({
+          fallCheckIn: {
+            ...state.fallCheckIn,
+            isOpen: false,
+            userResponse: 'timeout',
+            deadline: null
+          },
+          preparedSOSList: [sosRecord, ...filtered]
+        });
+      } else {
+        set({
+          fallCheckIn: {
+            ...state.fallCheckIn,
+            isOpen: false,
+            userResponse: 'timeout',
+            deadline: null
+          }
+        });
+      }
+    },
+
+    cancelFallCheckIn: () => {
+      set({
+        fallCheckIn: {
+          isOpen: false,
+          incidentId: null,
+          deadline: null,
+          userResponse: 'pending'
+        }
+      });
+    },
+
+    prepareManualSOS: (customIncidentId?: string) => {
+      const state = get();
+      const isContactValid = EmergencyManager.isContactValid(state.profile.emergencyContact);
+      if (!isContactValid) {
+        return {
+          success: false,
+          reason: 'Emergency contact name or telephone number is missing or invalid. Please update your profile.'
+        };
+      }
+
+      const incidentId = customIncidentId || `inc-manual-${Date.now()}`;
+      const record = EmergencyManager.prepareSOSPayload(
+        state.profile,
+        state.settings.sharingChoices,
+        state.currentReading,
+        state.environment,
+        state.riskAssessment,
+        incidentId,
+        'manual'
+      );
+
+      const filtered = state.preparedSOSList.filter(s => s.incidentId !== incidentId);
+      set({
+        preparedSOSList: [record, ...filtered]
+      });
+
+      return { success: true, record };
+    },
+
+    connectDemoBelt: async () => {
+      set({ isPairingInProgress: true });
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await sensorAdapter.connect();
+      set(state => ({
+        isPairingInProgress: false,
+        deviceStatus: DeviceManager.setConnectionStatus(state.deviceStatus, 'connected')
+      }));
+    },
+
+    disconnectDemoBelt: async () => {
+      await sensorAdapter.disconnect();
+      set(state => ({
+        deviceStatus: DeviceManager.setConnectionStatus(state.deviceStatus, 'disconnected')
+      }));
+    },
+
+    resetProtectionSequence: () => {
+      set(state => ({
+        deviceStatus: DeviceManager.resetProtectionSequence(state.deviceStatus)
+      }));
+    },
+
+    clearPreparedSOS: () => {
+      set({ preparedSOSList: [] });
     }
   };
 });

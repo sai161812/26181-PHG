@@ -44,6 +44,7 @@ export interface PersistedState {
   settings: Settings;
   recentAlerts: Alert[];
   deviceStatus: DeviceStatus;
+  preparedSOS?: import('./types').SOSRecord[];
   lastUpdated: number;
 }
 
