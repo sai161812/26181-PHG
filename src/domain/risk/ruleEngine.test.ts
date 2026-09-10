@@ -232,3 +232,92 @@ describe('Emergency Manager Consent Filtering', () => {
     expect(payload.status).toBe('prepared_demonstration_only');
   });
 });
+
+describe('Phase 3 Explicit Verification Tests', () => {
+  const engine = new RuleBasedRiskEngine();
+
+  it('verifies Heat 72-to-108 BPM baseline comparison (+50% HR deviation, settled score 78)', () => {
+    const deviation = BaselineManager.calculateHRDeviationPct(108, 72);
+    expect(deviation).toBe(50); // 50% relative deviation
+
+    const sp = SCENARIO_SETPOINTS.heat_wave;
+    const reading: SensorReading = {
+      id: 'rdg-heat-verify',
+      sequence: 10,
+      observedAt: Date.now(),
+      ...sp.sensor,
+      hr: 108
+    };
+    const env: EnvironmentSnapshot = {
+      id: 'env-heat-verify',
+      observedAt: Date.now(),
+      validUntil: Date.now() + 15 * 60 * 1000,
+      ...sp.environment
+    };
+
+    const assessment = engine.evaluate({
+      reading,
+      baseline: { ...DEMO_BASELINE, restingHR: 72 },
+      environment: env
+    });
+
+    const hrFactor = assessment.factors.find(f => f.id === 'heat-hr');
+    expect(hrFactor).toBeDefined();
+    expect(hrFactor?.contribution).toBe(10);
+    expect(assessment.overallScore).toBe(78);
+  });
+
+  it('verifies Pollution 98-to-94 percentage-point drop (-4 pp delta, settled score 68)', () => {
+    const ppDrop = BaselineManager.calculateSpO2DiffPp(94, 98);
+    expect(ppDrop).toBe(4); // 4 percentage points drop
+
+    const sp = SCENARIO_SETPOINTS.pollution;
+    const reading: SensorReading = {
+      id: 'rdg-pollution-verify',
+      sequence: 15,
+      observedAt: Date.now(),
+      ...sp.sensor,
+      spo2: 94
+    };
+    const env: EnvironmentSnapshot = {
+      id: 'env-pollution-verify',
+      observedAt: Date.now(),
+      validUntil: Date.now() + 15 * 60 * 1000,
+      ...sp.environment,
+      aqi: 185
+    };
+
+    const assessment = engine.evaluate({
+      reading,
+      baseline: { ...DEMO_BASELINE, spo2: 98 },
+      environment: env
+    });
+
+    const spo2Factor = assessment.factors.find(f => f.id === 'resp-spo2');
+    expect(spo2Factor).toBeDefined();
+    expect(spo2Factor?.contribution).toBe(25);
+    expect(assessment.overallScore).toBe(68);
+  });
+
+  it('verifies manual resting HR is labeled and protected from silent overwrite on recalculation', () => {
+    const manualBaseline = {
+      ...DEMO_BASELINE,
+      restingHR: 65,
+      isManualRestingHR: true,
+      source: 'User-entered resting HR'
+    };
+
+    const history = [
+      { hrAvg: 72, spo2Avg: 98, tempAvg: 36.7, sleepMin: 440 },
+      { hrAvg: 73, spo2Avg: 98, tempAvg: 36.7, sleepMin: 440 },
+      { hrAvg: 71, spo2Avg: 98, tempAvg: 36.7, sleepMin: 440 }
+    ];
+
+    const recalculated = BaselineManager.recalculateFromHistory(history, manualBaseline);
+
+    // Manual resting HR must be preserved (not overwritten by median 72)
+    expect(recalculated.restingHR).toBe(65);
+    expect(recalculated.isManualRestingHR).toBe(true);
+    expect(recalculated.source).toContain('Manual resting HR preserved');
+  });
+});

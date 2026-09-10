@@ -14,7 +14,10 @@ export class BaselineManager {
     return Math.round((currentTemp - baselineTemp) * 10) / 10;
   }
 
-  public static recalculateFromHistory(history: Array<{ hrAvg: number; spo2Avg: number; tempAvg: number; sleepMin: number }>): Partial<Baseline> {
+  public static recalculateFromHistory(
+    history: Array<{ hrAvg: number; spo2Avg: number; tempAvg: number; sleepMin: number }>,
+    currentBaseline?: Baseline
+  ): Partial<Baseline> {
     if (history.length === 0) return {};
     
     // Sort for median calculation
@@ -24,13 +27,17 @@ export class BaselineManager {
     const sleeps = [...history.map(h => h.sleepMin)].sort((a, b) => a - b);
 
     const mid = Math.floor(hrs.length / 2);
+    const isManual = currentBaseline?.isManualRestingHR ?? false;
 
     return {
-      restingHR: hrs[mid],
+      restingHR: isManual && currentBaseline ? currentBaseline.restingHR : hrs[mid],
       spo2: spo2s[mid],
       bodyTemperatureC: temps[mid],
       sleepMinutes: sleeps[mid],
-      source: 'Recalculated from 30-day illustrative history medians',
+      isManualRestingHR: isManual,
+      source: isManual 
+        ? '30-day medians (Manual resting HR preserved)' 
+        : 'Recalculated from 30-day illustrative history medians',
       computedAt: 'Just now'
     };
   }

@@ -17,7 +17,9 @@ import { FixtureEnvironmentProvider } from '../adapters/environment/fixtureEnvir
 import { RuleBasedRiskEngine } from '../domain/risk/ruleEngine';
 import { AlertManager } from '../domain/managers/alertManager';
 import { DeviceManager } from '../domain/managers/deviceManager';
+import { BaselineManager } from '../domain/managers/baselineManager';
 import { LocalStorageRepository } from '../storage/localRepository';
+import { generateDeterministic30DayHistory } from '../data/historyGenerator';
 import { DEMO_PROFILE, DEMO_BASELINE } from '../data/fixtures';
 import { SCENARIO_SETPOINTS } from '../data/scenarios';
 
@@ -36,8 +38,13 @@ export interface CompanionState {
   demoState: DemoState;
   isHydrated: boolean;
 
+  activeHealthTab: 'live' | 'baseline' | 'trends';
+  selectedTrendMetric: 'hr' | 'spo2' | 'temp' | 'activity' | 'sleep' | 'risk';
+
   // Actions
   init: () => void;
+  setActiveHealthTab: (tab: 'live' | 'baseline' | 'trends') => void;
+  setSelectedTrendMetric: (metric: 'hr' | 'spo2' | 'temp' | 'activity' | 'sleep' | 'risk') => void;
   setScenario: (scenario: ScenarioType) => void;
   togglePause: () => void;
   setSimulatedOffline: (offline: boolean) => void;
@@ -46,6 +53,8 @@ export interface CompanionState {
   acknowledgeAlert: (alertId: string) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   updateBaseline: (updates: Partial<Baseline>) => void;
+  recalculateBaseline: (resetManualHR?: boolean) => void;
+  setManualRestingHR: (hr: number) => void;
   updateSharingChoices: (choices: Partial<Settings['sharingChoices']>) => void;
 }
 
@@ -118,6 +127,8 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
       lastTickAt: Date.now()
     },
     isHydrated: false,
+    activeHealthTab: 'live',
+    selectedTrendMetric: 'hr',
 
     init: async () => {
       // 1. Hydrate first from LocalStorage
@@ -365,6 +376,46 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
     updateBaseline: (updates: Partial<Baseline>) => {
       set(state => ({
         baseline: { ...state.baseline, ...updates }
+      }));
+    },
+
+    setActiveHealthTab: (tab: 'live' | 'baseline' | 'trends') => {
+      set({ activeHealthTab: tab });
+    },
+
+    setSelectedTrendMetric: (metric: 'hr' | 'spo2' | 'temp' | 'activity' | 'sleep' | 'risk') => {
+      set({ selectedTrendMetric: metric });
+    },
+
+    recalculateBaseline: (resetManualHR?: boolean) => {
+      const state = get();
+      const history = generateDeterministic30DayHistory(state.baseline);
+      const updatedBaseline = BaselineManager.recalculateFromHistory(
+        history,
+        resetManualHR ? undefined : state.baseline
+      );
+      set(s => ({
+        baseline: {
+          ...s.baseline,
+          ...updatedBaseline,
+          isManualRestingHR: resetManualHR ? false : s.baseline.isManualRestingHR
+        }
+      }));
+    },
+
+    setManualRestingHR: (hr: number) => {
+      set(s => ({
+        baseline: {
+          ...s.baseline,
+          restingHR: hr,
+          isManualRestingHR: true,
+          source: 'Manually entered resting HR (User-defined)'
+        },
+        profile: {
+          ...s.profile,
+          restingHR: hr,
+          profileOrigin: 'user_configured'
+        }
       }));
     },
 

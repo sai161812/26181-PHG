@@ -27,6 +27,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
   const liveBufferHR = useCompanionStore(s => s.liveBufferHR);
   const liveBufferSpO2 = useCompanionStore(s => s.liveBufferSpO2);
   const demoState = useCompanionStore(s => s.demoState);
+  const setActiveHealthTab = useCompanionStore(s => s.setActiveHealthTab);
+  const setSelectedTrendMetric = useCompanionStore(s => s.setSelectedTrendMetric);
 
   // Compute live deviations
   const hrVal = currentReading.hr ?? baseline.restingHR;
@@ -168,7 +170,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           deltaText={hrDeltaText}
           deltaTone={hrTone}
           sparkline={hrSparkline.length > 1 ? hrSparkline : [71, 72, 73, 72, hrVal]}
-          onClick={() => onNavigate('health')}
+          onClick={() => {
+            setActiveHealthTab('live');
+            setSelectedTrendMetric('hr');
+            onNavigate('health');
+          }}
           flex={1}
         />
 
@@ -181,7 +187,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           deltaText={spo2DeltaText}
           deltaTone={spo2Tone}
           sparkline={spo2Sparkline.length > 1 ? spo2Sparkline : [98, 98, 97, 98, spo2Val]}
-          onClick={() => onNavigate('health')}
+          onClick={() => {
+            setActiveHealthTab('live');
+            setSelectedTrendMetric('spo2');
+            onNavigate('health');
+          }}
           flex={1}
         />
 
@@ -194,7 +204,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           deltaText={tempDeltaText}
           deltaTone={tempTone}
           sparkline={[36.6, 36.7, 36.7, tempVal]}
-          onClick={() => onNavigate('health')}
+          onClick={() => {
+            setActiveHealthTab('live');
+            setSelectedTrendMetric('temp');
+            onNavigate('health');
+          }}
           flex={1}
         />
 
@@ -207,7 +221,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           deltaText={`${currentReading.activity} exertion`}
           deltaTone="neutral"
           sparkline={[10, 20, 25, activityMin]}
-          onClick={() => onNavigate('health')}
+          onClick={() => {
+            setActiveHealthTab('live');
+            setSelectedTrendMetric('activity');
+            onNavigate('health');
+          }}
           flex={1}
         />
 
@@ -230,7 +248,10 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
       >
         {/* Left: Clean Live Chart with real buffers */}
         <ChartPanel 
-          onOpenTrends={() => onNavigate('health')}
+          onOpenTrends={() => {
+            setActiveHealthTab('trends');
+            onNavigate('health');
+          }}
           bufferHR={liveBufferHR}
           bufferSpO2={liveBufferSpO2}
         />

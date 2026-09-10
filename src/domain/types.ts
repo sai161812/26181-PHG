@@ -42,6 +42,7 @@ export interface Baseline {
   timeWindow: string;
   source: string;
   computedAt: string;
+  isManualRestingHR?: boolean;
 }
 
 export interface SensorReading {

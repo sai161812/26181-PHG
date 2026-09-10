@@ -3,8 +3,8 @@ import { useCompanionStore } from './store/companionStore';
 import { Sidebar } from './app/Sidebar';
 import { TopBar } from './app/TopBar';
 import { OverviewPage } from './features/overview/OverviewPage';
-import { HealthScaffold } from './features/health/HealthScaffold';
-import { AnalysisScaffold } from './features/analysis/AnalysisScaffold';
+import { HealthPage } from './features/health/HealthPage';
+import { AnalysisPage } from './features/analysis/AnalysisPage';
 import { EnvironmentScaffold } from './features/environment/EnvironmentScaffold';
 import { AlertsScaffold } from './features/alerts/AlertsScaffold';
 import { DevicesScaffold } from './features/devices/DevicesScaffold';
@@ -28,9 +28,9 @@ export const App: React.FC = () => {
       case 'overview':
         return <OverviewPage onNavigate={(dest) => setActiveDestination(dest)} />;
       case 'health':
-        return <HealthScaffold />;
+        return <HealthPage />;
       case 'ai-analysis':
-        return <AnalysisScaffold />;
+        return <AnalysisPage />;
       case 'environment':
         return <EnvironmentScaffold />;
       case 'alerts':
