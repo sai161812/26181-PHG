@@ -6,8 +6,8 @@
 **Category:** Hardware / MedTech / HealthTech  
 **Platform Target:** Desktop-First (Demonstrated on a Laptop, 1366×768 base, 1920×1080 responsive)  
 **Total Allocated Budget:** 15 Hours  
-**Current Phase:** Phase 0 — Read, Reconcile, Initialize (COMPLETED)  
-**Next Phase:** Phase 1 — Desktop Visual Foundation & Polished Overview  
+**Current Phase:** Phase 1 — Desktop Visual Foundation & Polished Overview (COMPLETED)  
+**Next Phase:** Phase 2 — Local Domain and Simulation (Shared state, scenarios, persistence, risk engine)  
 
 ---
 
@@ -15,13 +15,12 @@
 
 | Item | Status | Notes |
 |---|---|---|
-| **Phase 0 Status** | **PASSED (Green)** | Contract established, stack initialized, documentation created, scaffold built cleanly |
-| **Active Target Viewport** | **Desktop-First (Laptop)** | Binding user instruction overrides mobile layout; fixed sidebar (216px) & topbar (64px) |
-| **Core Runnable Shell** | **Functional** | React 19 + TypeScript + Vite 6 runnable desktop scaffold with brand & navigation shell |
-| **Source Attachments** | **Intact & Preserved** | `SIH26181_Antigravity_Build_Guide.md`, `Elite Crew - SIH.pdf`, `PRD.md` preserved in root & backed up in `docs/source/` |
-| **Risk Engine Boundary** | **Defined** | Transparent rule-based demonstration only; no fake clinical model or LLM API |
-| **Hardware Boundary** | **Defined** | Simulated MPU6050 and belt telemetry; no physical actuators or real sensors wired |
-| **Emergency Boundary** | **Defined** | Local consent-filtered SOS preparation; strictly zero network dispatch |
+| **Phase 0 Status** | **PASSED (Green)** | Contract established, stack initialized, governance docs created, scaffold verified |
+| **Phase 1 Status** | **PASSED (Green)** | Desktop shell complete, design tokens locked to `SIH26181_UI_PREFERENCE.md`, polished 4-row Overview, reusable primitives, Demo Controls drawer layout, verified at 1366×768 and 1920×1080 |
+| **Active Target Viewport** | **Desktop-First (Laptop)** | Fixed sidebar (216px) & topbar (64px); 7/5 column balance; responsive 1366×768 base and 1920×1080 full HD |
+| **Overview Screen** | **Polished & Verified** | Row 1 Safety context; Row 2 Risk (7 cols) + Belt schematic (5 cols); Row 3 Vitals & Environment cluster; Row 4 Live chart & Recent alerts |
+| **Belt Identity** | **Verified** | Custom vector SVG waist-worn belt schematic with dual airbag deployment pods, ESP32 MCU housing, and MPU6050 status |
+| **Demo Controls Drawer** | **Scaffolded** | Global drawer with all 7 scenarios, pause/resume, and offline simulation toggle ready for Phase 2 binding |
 
 ---
 
@@ -30,8 +29,8 @@
 | Phase | Timebox | Cumulative | Outcome / Acceptance Gate | Status |
 |---|---:|---:|---|:---:|
 | **0. Read, reconcile, initialize** | 30 min | 0:30 | Scope, governance docs, traceability, runnable scaffold. Gate: App opens, scaffold builds cleanly, traceability includes belt and desktop correction. | **COMPLETE** |
-| **1. Desktop visual foundation** | 90 min | 2:00 | Approved shell, design tokens, responsive grid (1366×768 / 1920×1080), polished Overview with 7 metrics and belt summary, Demo Controls drawer layout. | **NEXT** |
-| **2. Local domain and simulation** | 120 min | 4:00 | Shared Zustand store, domain types, managers, replaceable adapters, deterministic 30-day history, root 2-second simulator, settled scenario scores (Normal 18, Heat 78, Pollution 68, Fatigue 58). | PENDING |
+| **1. Desktop visual foundation** | 90 min | 2:00 | Approved shell, design tokens, responsive grid (1366×768 / 1920×1080), polished Overview with 7 metrics and belt summary, Demo Controls drawer layout. | **COMPLETE** |
+| **2. Local domain and simulation** | 120 min | 4:00 | Shared Zustand store, domain types, managers, replaceable adapters, deterministic 30-day history, root 2-second simulator, settled scenario scores (Normal 18, Heat 78, Pollution 68, Fatigue 58). | **NEXT** |
 | **3. Health and explanation experience** | 120 min | 6:00 | Health workspace (Live, Baseline, Trends tabs), 6 metric trend charts (Today/7D/30D), AI Analysis 5 processing stages and factor explanations. | PENDING |
 | **4. Environment and alerts** | 90 min | 7:30 | Environmental Safety & Disasters (Heat, AQI, Flood, Cyclone), Alerts workspace with deduplication, input snapshots, 2-sample trigger, 3-sample resolution. | PENDING |
 | **5. Belt, fall and SOS** | 90 min | 9:00 | Local SVG belt illustration, 10 component statuses, Connect flow, Possible Fall protection timeline + "Are you okay?" 20s check-in, consent-filtered demo SOS payload. | PENDING |
