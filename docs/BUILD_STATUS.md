@@ -6,8 +6,8 @@
 **Category:** Hardware / MedTech / HealthTech  
 **Platform Target:** Desktop-First (Demonstrated on a Laptop, 1366×768 base, 1920×1080 responsive)  
 **Total Allocated Budget:** 15 Hours  
-**Current Phase:** Phase 5 — Belt, Fall and SOS Demonstration (COMPLETED)  
-**Next Phase:** Phase 6 — Onboarding, Profile and Privacy (PENDING)  
+**Current Phase:** Phase 6 — Onboarding, Profile and Privacy (COMPLETED)  
+**Next Phase:** Phase 7 — Offline and Integration (PENDING)  
 
 ---
 
@@ -21,6 +21,7 @@
 | **Phase 3 Status** | **PASSED (Green)** | Health workspace completed (Live stream with diagnostics, Personal Baseline with manual resting HR protection, Longitudinal Trends with 6 metrics and Today/7D/30D windows), AI Analysis completed (5 real processing stages, transparent factor decomposition table, 5 anomaly categories, truthful confidence disclosure), 15/15 unit tests passing |
 | **Phase 4 Status** | **PASSED (Green)** | Environmental Safety completed (2×2 hazard matrix for Heat, AQI, Flood, Cyclone; timestamped freshness; municipal disaster separation maintaining nominal baseline 18 / Low; non-diagnostic CDC/NDMA advice), Alerts workspace completed (Status tabs, category/severity filters, frozen input snapshot drawer, 2-sample trigger, 3-sample normal resolution, 1-episode deduplication, escalation, scenario superseding), 25/25 unit tests passing |
 | **Phase 5 Status** | **PASSED (Green)** | Belt, Fall and SOS demonstration completed: waist-worn vector SVG schematic, 12 component channels, connect/disconnect flow with bounded pairing feedback, independent fall protection timeline, "Are you okay?" 20s demo escalation countdown, consent-filtered SOS payloads with contact validation, location provenance, and payload inspection, 41/41 unit tests passing |
+| **Phase 6 Status** | **PASSED (Green)** | 4-step onboarding wizard with local laptop edge processing disclosure and fast-track demo profile (Ravi, 62); Profile editing with real-time validation, save/cancel states, and protected manual resting-HR provenance; Privacy Center with edge isolation badges, granular SOS payload sharing toggles with live JSON preview, Phase 7 cache readiness placeholder, and confirmed data deletion flow with timer halting and return to onboarding; 54/54 unit tests passing |
 | **Active Target Viewport** | **Desktop-First (Laptop)** | Fixed sidebar (216px) & topbar (64px); 7/5 column balance; responsive 1366×768 base and 1920×1080 full HD |
 | **Overview Screen** | **Fully Wired** | Direct links from metric cards and risk summary to Health tabs and AI Analysis detail |
 | **Belt Identity** | **Verified** | Custom vector SVG waist-worn belt schematic with dual airbag deployment pods, ESP32 MCU housing, and MPU6050 status |
@@ -38,8 +39,8 @@
 | **3. Health and explanation experience** | 120 min | 6:00 | Health workspace (Live, Baseline, Trends tabs), 6 metric trend charts (Today/7D/30D), AI Analysis 5 processing stages and factor explanations. | **COMPLETE** |
 | **4. Environment and alerts** | 90 min | 7:30 | Environmental Safety & Disasters (Heat, AQI, Flood, Cyclone), Alerts workspace with deduplication, input snapshots, 2-sample trigger, 3-sample resolution. Gate: sustained heat produces 1 active alert, acknowledgement does not erase risk, flood leaves vitals normal. | **COMPLETE** |
 | **5. Belt, fall and SOS** | 90 min | 9:00 | Local SVG belt illustration, 10 component statuses, Connect flow, Possible Fall protection timeline + "Are you okay?" 20s check-in, consent-filtered demo SOS payload. Gate: fall visibly changes belt timeline; cancellation works; SOS ends in "prepared" without real sending. | **COMPLETE** |
-| **6. Onboarding, profile and privacy** | 90 min | 10:30 | 4-step onboarding wizard, Profile editing, resting HR provenance, Privacy Center with local laptop processing and confirmed data deletion. | **NEXT** |
-| **7. Offline and integration** | 120 min | 12:30 | PWA app shell offline reload under service worker, synthetic offline context vs cached bulletins, cross-route coherence. Feature and dependency freeze. | PENDING |
+| **6. Onboarding, profile and privacy** | 90 min | 10:30 | 4-step onboarding wizard, Profile editing, resting HR provenance, Privacy Center with local laptop processing and confirmed data deletion. Gate: all settings persist and affect behavior; data deletion stays deleted until the user explicitly begins again. | **COMPLETE** |
+| **7. Offline and integration** | 120 min | 12:30 | PWA app shell offline reload under service worker, synthetic offline context vs cached bulletins, cross-route coherence. Feature and dependency freeze. | **NEXT** |
 | **8. Visual and interaction finish** | 60 min | 13:30 | 1366×768 and 1920×1080 usability sweep, keyboard focus, contrast check, reduced-motion support, no clipping or horizontal scroll. | PENDING |
 | **9. Verification and rehearsal** | 90 min | 15:00 | Requirement matrix audit, offline reload test, 5-minute judge demo rehearsal twice, documentation (`README.md`, `DEMO_SCRIPT.md`, `VERIFICATION.md`, `FUTURE_INTEGRATION.md`). | PENDING |
 

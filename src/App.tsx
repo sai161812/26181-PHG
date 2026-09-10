@@ -10,8 +10,9 @@ import { AlertsPage } from './features/alerts/AlertsPage';
 import { DevicesPage } from './features/devices/DevicesPage';
 import { EmergencyPage } from './features/emergency/EmergencyPage';
 import { FallCheckInModal } from './features/emergency/FallCheckInModal';
-import { PrivacyScaffold } from './features/privacy/PrivacyScaffold';
-import { ProfileScaffold } from './features/profile/ProfileScaffold';
+import { PrivacyPage } from './features/privacy/PrivacyPage';
+import { ProfilePage } from './features/profile/ProfilePage';
+import { OnboardingModal } from './features/onboarding/OnboardingModal';
 import { DemoControlsDrawer } from './features/demo/DemoControlsDrawer';
 
 export const App: React.FC = () => {
@@ -41,9 +42,9 @@ export const App: React.FC = () => {
       case 'emergency':
         return <EmergencyPage />;
       case 'privacy':
-        return <PrivacyScaffold />;
+        return <PrivacyPage />;
       case 'profile-settings':
-        return <ProfileScaffold />;
+        return <ProfilePage />;
       default:
         return <OverviewPage onNavigate={(dest) => setActiveDestination(dest)} />;
     }
@@ -98,6 +99,9 @@ export const App: React.FC = () => {
       <FallCheckInModal
         onNavigateToEmergency={() => setActiveDestination('emergency')}
       />
+
+      {/* Four-Step Onboarding Wizard Modal */}
+      <OnboardingModal />
     </div>
   );
 };

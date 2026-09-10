@@ -74,6 +74,13 @@ export interface CompanionState {
   disconnectDemoBelt: () => Promise<void>;
   resetProtectionSequence: () => void;
   clearPreparedSOS: () => void;
+
+  // Phase 6 Actions
+  completeOnboarding: (profileUpdates: Partial<UserProfile>, choices: Partial<Settings['sharingChoices']>) => void;
+  clearLocalData: () => Promise<void>;
+  relaunchOnboarding: () => void;
+  updateAccessibilityChoices: (choices: Partial<Settings['accessibilityChoices']>) => void;
+  resetToDemoProfile: () => void;
 }
 
 // Singletons for root-owned execution
@@ -458,17 +465,33 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
 
     updateProfile: (updates: Partial<UserProfile>) => {
       set(state => {
-        const nextProfile = { ...state.profile, ...updates };
+        const nextProfile: UserProfile = { 
+          ...state.profile, 
+          ...updates,
+          profileOrigin: 'user_configured'
+        };
         let nextBaseline = state.baseline;
 
         // If user manually changed restingHR, it takes precedence and provenance is user_configured
-        if (updates.restingHR && updates.restingHR !== state.profile.restingHR) {
+        if (updates.restingHR !== undefined) {
           nextBaseline = {
             ...state.baseline,
             restingHR: updates.restingHR,
-            source: 'User-entered resting HR'
+            isManualRestingHR: true,
+            source: 'Manually entered resting HR (User-defined)'
           };
         }
+
+        repository.save({
+          version: 1,
+          profile: nextProfile,
+          baseline: nextBaseline,
+          settings: state.settings,
+          recentAlerts: state.alerts,
+          deviceStatus: state.deviceStatus,
+          preparedSOS: state.preparedSOSList,
+          lastUpdated: Date.now()
+        });
 
         return {
           profile: nextProfile,
@@ -688,6 +711,185 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
 
     clearPreparedSOS: () => {
       set({ preparedSOSList: [] });
+    },
+
+    // Phase 6 Actions
+    completeOnboarding: (profileUpdates: Partial<UserProfile>, choices: Partial<Settings['sharingChoices']>) => {
+      const state = get();
+      const updatedProfile: UserProfile = {
+        ...state.profile,
+        ...profileUpdates,
+        profileOrigin: profileUpdates.profileOrigin || 'user_configured'
+      };
+
+      let updatedBaseline = state.baseline;
+      if (profileUpdates.restingHR !== undefined) {
+        updatedBaseline = {
+          ...state.baseline,
+          restingHR: profileUpdates.restingHR,
+          isManualRestingHR: true,
+          source: 'Manually entered resting HR (User-defined)'
+        };
+      }
+
+      const updatedSettings: Settings = {
+        ...state.settings,
+        onboardingComplete: true,
+        sharingChoices: {
+          ...state.settings.sharingChoices,
+          ...choices
+        }
+      };
+
+      set({
+        profile: updatedProfile,
+        baseline: updatedBaseline,
+        settings: updatedSettings
+      });
+
+      // Synchronously flush state to LocalStorage repository
+      repository.save({
+        version: 1,
+        profile: updatedProfile,
+        baseline: updatedBaseline,
+        settings: updatedSettings,
+        recentAlerts: state.alerts,
+        deviceStatus: state.deviceStatus,
+        preparedSOS: state.preparedSOSList,
+        lastUpdated: Date.now()
+      });
+      repository.flushSync();
+
+      // Ensure simulator is active
+      if (sensorAdapter.isPaused()) {
+        sensorAdapter.resume();
+        set(s => ({ demoState: { ...s.demoState, isPaused: false } }));
+      }
+    },
+
+    clearLocalData: async () => {
+      // 1. Halt sensor simulator timer and persistence
+      sensorAdapter.pause();
+
+      // 2. Erase persisted records
+      await repository.clear();
+
+      // 3. Clear alert engine active episodes
+      alertManager.clearAllEpisodes();
+
+      // 4. Return to unconfigured blank profile without silently reseeding
+      const blankProfile: UserProfile = {
+        id: 'usr-unconfigured',
+        name: '',
+        age: 0,
+        gender: '',
+        restingHR: 70,
+        emergencyContact: {
+          name: '',
+          relationship: '',
+          phone: ''
+        },
+        profileOrigin: 'user_configured'
+      };
+
+      const blankBaseline: Baseline = {
+        restingHR: 70,
+        spo2: 98,
+        bodyTemperatureC: 36.7,
+        activity: 'Moderate',
+        sleepMinutes: 420,
+        sampleCount: 0,
+        timeWindow: 'Default baseline',
+        source: 'Uncalibrated baseline',
+        computedAt: 'Pending calibration',
+        isManualRestingHR: false
+      };
+
+      const freshSettings: Settings = {
+        schemaVersion: 1,
+        onboardingComplete: false,
+        sharingChoices: {
+          shareLocation: false,
+          shareVitals: false,
+          shareRiskAssessment: false
+        },
+        notificationPreference: 'in_app_only',
+        simulatedOffline: false,
+        accessibilityChoices: {
+          reducedMotion: false,
+          highContrast: false
+        }
+      };
+
+      set(state => ({
+        profile: blankProfile,
+        baseline: blankBaseline,
+        settings: freshSettings,
+        alerts: [],
+        preparedSOSList: [],
+        deviceStatus: DeviceManager.createDefaultDeviceStatus(),
+        fallCheckIn: {
+          isOpen: false,
+          incidentId: null,
+          deadline: null,
+          userResponse: 'pending'
+        },
+        demoState: {
+          ...state.demoState,
+          isPaused: true,
+          scenarioId: 'normal'
+        }
+      }));
+    },
+
+    relaunchOnboarding: () => {
+      set(state => ({
+        settings: {
+          ...state.settings,
+          onboardingComplete: false
+        }
+      }));
+    },
+
+    updateAccessibilityChoices: (choices: Partial<Settings['accessibilityChoices']>) => {
+      set(state => {
+        const nextSettings: Settings = {
+          ...state.settings,
+          accessibilityChoices: {
+            ...state.settings.accessibilityChoices,
+            ...choices
+          }
+        };
+        repository.save({
+          version: 1,
+          profile: state.profile,
+          baseline: state.baseline,
+          settings: nextSettings,
+          recentAlerts: state.alerts,
+          deviceStatus: state.deviceStatus,
+          preparedSOS: state.preparedSOSList,
+          lastUpdated: Date.now()
+        });
+        return { settings: nextSettings };
+      });
+    },
+
+    resetToDemoProfile: () => {
+      const state = get();
+      set({
+        profile: { ...DEMO_PROFILE },
+        baseline: { ...DEMO_BASELINE }
+      });
+      repository.save({
+        version: 1,
+        profile: { ...DEMO_PROFILE },
+        baseline: { ...DEMO_BASELINE },
+        settings: state.settings,
+        recentAlerts: state.alerts,
+        deviceStatus: state.deviceStatus,
+        preparedSOS: state.preparedSOSList,
+        lastUpdated: Date.now()
+      });
     }
   };
 });
