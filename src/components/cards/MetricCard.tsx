@@ -78,14 +78,20 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       }}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
       {/* Card Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '8px', minWidth: 0 }}>
+        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {title}
         </span>
         {deltaText && (
-          <span style={{ fontSize: '12px', fontWeight: 600, color: deltaColors[deltaTone] }}>
+          <span style={{ fontSize: '11px', fontWeight: 600, color: deltaColors[deltaTone], textAlign: 'right', whiteSpace: 'nowrap', flexShrink: 0 }}>
             {deltaText}
           </span>
         )}

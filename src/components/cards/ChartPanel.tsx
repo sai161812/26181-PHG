@@ -119,7 +119,7 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({
       {/* Plot Surface */}
       <div style={{ flex: 1, minHeight: '200px', width: '100%', position: 'relative' }}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+          <LineChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
             <CartesianGrid stroke="#EEF3F1" strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="time"
@@ -129,6 +129,7 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({
             />
             <YAxis
               domain={current.domain}
+              width={65}
               tickLine={false}
               axisLine={{ stroke: 'var(--border)' }}
               tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }}

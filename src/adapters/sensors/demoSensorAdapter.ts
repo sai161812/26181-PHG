@@ -52,7 +52,8 @@ export class DemoSensorAdapter implements SensorAdapter {
   }
 
   public setScenario(scenario: ScenarioType): void {
-    const target = SCENARIO_SETPOINTS[scenario].sensor;
+    const key = (scenario === ('heat' as any) ? 'heat_wave' : scenario) as ScenarioType;
+    const target = SCENARIO_SETPOINTS[key]?.sensor || SCENARIO_SETPOINTS.normal.sensor;
     this.targetHR = target.hr ?? 72;
     this.targetSpO2 = target.spo2 ?? 98;
     this.targetTemp = target.bodyTemperatureC ?? 36.7;

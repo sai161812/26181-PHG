@@ -21,6 +21,22 @@
   --risk-high-bg: #FFF0E3;
   --risk-critical: #B53A3A;
   --risk-critical-bg: #FCE6E6;
+
+  /* Palette Aliases for Component Harmony */
+  --rose-600: #B53A3A;
+  --rose-500: #DC2626;
+  --rose-400: #F87171;
+  --amber-600: #BF6417;
+  --amber-500: #A96808;
+  --amber-300: #FCD34D;
+  --amber-700: #92400E;
+  --amber-900: #78350F;
+  --amber-50: #FFF1D6;
+  --teal-800: #094842;
+  --teal-50: #E6F4F1;
+  --teal-300: #A7D7CF;
+  --teal-900: #094842;
+  --teal-950: #042522;
   
   --shadow: 0 1px 2px rgba(20, 44, 43, .05), 0 6px 18px rgba(20, 44, 43, .045);
 

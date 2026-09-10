@@ -51,73 +51,95 @@ export const FallCheckInModal: React.FC<FallCheckInModalProps> = ({ onNavigateTo
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#111827]/60 backdrop-blur-sm animate-fadeIn"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 150,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        backgroundColor: 'rgba(17, 24, 39, 0.65)',
+        backdropFilter: 'blur(4px)'
+      }}
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="fall-checkin-title"
     >
       <div 
-        className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-[#F97316]/30 overflow-hidden"
         style={{
-          boxShadow: '0 25px 50px -12px rgba(249, 115, 22, 0.25)'
+          width: '100%',
+          maxWidth: '520px',
+          backgroundColor: 'var(--surface)',
+          borderRadius: '16px',
+          border: '1px solid rgba(249, 115, 22, 0.3)',
+          boxShadow: '0 25px 50px -12px rgba(249, 115, 22, 0.25)',
+          overflow: 'hidden'
         }}
       >
         {/* Urgent header bar */}
-        <div className="bg-[#FFF7ED] px-6 py-4 border-b border-[#FFEDD5] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[#C2410C]">
+        <div style={{ backgroundColor: '#FFF7ED', padding: '16px 24px', borderBottom: '1px solid #FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C2410C' }}>
             <ShieldAlert className="w-5 h-5 animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-wider">
+            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Safety Check-In & Protection Sequence
             </span>
           </div>
-          <span className="text-xs font-medium text-[#9A3412] bg-[#FFEDD5] px-2.5 py-1 rounded-full">
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#9A3412', backgroundColor: '#FFEDD5', padding: '4px 10px', borderRadius: '9999px' }}>
             Belt Incident Active
           </span>
         </div>
 
-        <div className="p-6">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#FFF7ED] border-2 border-[#F97316] flex items-center justify-center text-[#EA580C]">
+        <div style={{ padding: '24px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <div style={{ width: '64px', height: '64px', margin: '0 auto 16px', borderRadius: '50%', backgroundColor: '#FFF7ED', border: '2px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C' }}>
               <AlertTriangle className="w-8 h-8 animate-bounce" />
             </div>
-            <h2 id="fall-checkin-title" className="text-2xl font-bold text-[#111827]">
+            <h2 id="fall-checkin-title" style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: 0 }}>
               Possible Fall Detected — Are you okay?
             </h2>
-            <p className="mt-2 text-sm text-[#4B5563] leading-relaxed">
+            <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '8px 0 0' }}>
               The integrated health belt’s MPU6050 motion sensor registered an abrupt acceleration impact vector followed by prolonged inactivity.
             </p>
           </div>
 
           {/* Labeled 20-Second Demo Escalation Countdown */}
-          <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#475569]">
+          <div style={{ backgroundColor: 'var(--canvas)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>
                 <Clock className="w-4 h-4 text-[#F97316]" />
                 <span>Demo Escalation Countdown</span>
               </div>
-              <span className={`text-lg font-bold font-mono ${secondsRemaining <= 5 ? 'text-[#DC2626] animate-pulse' : 'text-[#EA580C]'}`}>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: secondsRemaining <= 5 ? '#DC2626' : '#EA580C', fontVariantNumeric: 'tabular-nums' }}>
                 {secondsRemaining}s
               </span>
             </div>
 
             {/* Countdown progress track */}
-            <div className="w-full bg-[#E2E8F0] h-2.5 rounded-full overflow-hidden">
+            <div style={{ width: '100%', backgroundColor: 'var(--border)', height: '10px', borderRadius: '9999px', overflow: 'hidden' }}>
               <div 
-                className="h-full bg-gradient-to-r from-[#F97316] to-[#EA580C] transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
+                style={{
+                  height: '100%',
+                  background: 'linear-gradient(to right, #F97316, #EA580C)',
+                  width: `${progressPct}%`,
+                  transition: 'width 0.3s linear'
+                }}
               />
             </div>
-            <p className="text-[11px] text-[#64748B] mt-2">
+            <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '8px', margin: '8px 0 0' }}>
               If no confirmation is chosen within 20 seconds, a local demo emergency SOS dispatch payload will be prepared for your registered caregiver.
             </p>
           </div>
 
           {/* Action buttons */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
             <Button
               variant="outline"
               size="lg"
-              className="w-full justify-center border-2 border-[#0E6B62] text-[#0E6B62] hover:bg-[#E6F4F1] font-semibold text-base py-3"
+              style={{ width: '100%', justifyContent: 'center', borderWidth: '2px', borderColor: 'var(--teal-700)', color: 'var(--teal-700)', fontWeight: 600, fontSize: '15px', padding: '12px' }}
               onClick={handleImOk}
             >
               <CheckCircle className="w-5 h-5 mr-2" />
@@ -126,7 +148,7 @@ export const FallCheckInModal: React.FC<FallCheckInModalProps> = ({ onNavigateTo
             <Button
               variant="primary"
               size="lg"
-              className="w-full justify-center bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold text-base py-3 shadow-md"
+              style={{ width: '100%', justifyContent: 'center', backgroundColor: '#DC2626', color: '#FFFFFF', fontWeight: 600, fontSize: '15px', padding: '12px' }}
               onClick={handleNeedHelp}
             >
               <ShieldAlert className="w-5 h-5 mr-2" />
@@ -134,11 +156,11 @@ export const FallCheckInModal: React.FC<FallCheckInModalProps> = ({ onNavigateTo
             </Button>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-[#F1F5F9] text-[11px] text-[#64748B]">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid var(--border)', fontSize: '11px', color: 'var(--text-tertiary)' }}>
             <span>Simulation ID: {fallCheckIn.incidentId || 'inc-active'}</span>
             <button 
               onClick={cancelFallCheckIn}
-              className="hover:underline text-[#475569]"
+              style={{ color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'underline' }}
             >
               Dismiss (Demo)
             </button>

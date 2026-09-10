@@ -85,7 +85,8 @@ export class FixtureEnvironmentProvider implements EnvironmentProvider {
   }
 
   private buildSnapshotForScenario(scenario: ScenarioType): EnvironmentSnapshot {
-    const sp = SCENARIO_SETPOINTS[scenario].environment;
+    const key = (scenario === ('heat' as any) ? 'heat_wave' : scenario) as ScenarioType;
+    const sp = SCENARIO_SETPOINTS[key]?.environment || SCENARIO_SETPOINTS.normal.environment;
     const now = Date.now();
     return {
       id: `env-${scenario}-${now}`,

@@ -306,7 +306,8 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
       }
     },
 
-    setScenario: (scenario: ScenarioType) => {
+    setScenario: (rawScenario: ScenarioType) => {
+      const scenario = (rawScenario === ('heat' as any) ? 'heat_wave' : rawScenario) as ScenarioType;
       const state = get();
 
       // Resolve superseded active episodes when demo scenario changes
@@ -895,3 +896,7 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
     }
   };
 });
+
+if (typeof window !== 'undefined') {
+  (window as any).companionStore = useCompanionStore;
+}

@@ -76,103 +76,201 @@ export const DevicesPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-12 animate-fadeIn">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingBottom: '32px' }}>
       {/* Page Title & Status Header */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#E6F4F1] border border-[#A7D7CF] flex items-center justify-center text-[#0E6B62] shrink-0">
-              <Radio className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-[#0E6B62] uppercase tracking-wider">
-                  Hardware Identity & Device Telemetry
-                </span>
-                <span className="text-[11px] font-mono text-[#64748B] bg-[#F1F5F9] px-2 py-0.5 rounded">
-                  SIH26181
-                </span>
-              </div>
-              <h1 className="text-2xl font-bold text-[#111827]">
-                Integrated Health Belt — Demo Sensor
-              </h1>
-              <p className="text-sm text-[#4B5563] mt-0.5">
-                Waist-worn active belt with bilateral hip airbags, MPU6050 motion classification, and ESP32 edge telemetry.
-              </p>
-            </div>
+      <div
+        style={{
+          backgroundColor: 'var(--surface)',
+          borderRadius: 'var(--radius-card)',
+          border: '1px solid var(--border)',
+          padding: '24px',
+          boxShadow: 'var(--shadow)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+          <div
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--teal-50)',
+              border: '1px solid var(--teal-300)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--teal-700)',
+              flexShrink: 0
+            }}
+          >
+            <Radio size={24} />
           </div>
-
-          {/* Quick Header Status & Action Controls */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Connection badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#334155]">
-              {isConnected ? (
-                <>
-                  <Wifi className="w-3.5 h-3.5 text-[#16A34A]" />
-                  <span>BLE Connected</span>
-                </>
-              ) : (
-                <>
-                  <WifiOff className="w-3.5 h-3.5 text-[#DC2626]" />
-                  <span>Belt Disconnected</span>
-                </>
-              )}
-            </div>
-
-            {/* Battery status */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#334155]">
-              <BatteryCharging className="w-3.5 h-3.5 text-[#16A34A]" />
-              <span>{deviceStatus.batteryPct}% LiPo</span>
-            </div>
-
-            {/* Protection status badge */}
-            {isDeployed ? (
-              <span className="px-3 py-1.5 bg-[#FEF2F2] border border-[#FCA5A5] text-[#DC2626] font-semibold text-xs rounded-xl flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Airbag Deployed
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--teal-700)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Hardware Identity & Device Telemetry
               </span>
-            ) : (
-              <span className="px-3 py-1.5 bg-[#E6F4F1] border border-[#A7D7CF] text-[#0E6B62] font-semibold text-xs rounded-xl flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Armed & Ready
+              <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--text-tertiary)', backgroundColor: 'var(--surface-muted)', padding: '2px 6px', borderRadius: '4px' }}>
+                SIH26181
               </span>
-            )}
+            </div>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text)', margin: '4px 0 0' }}>
+              Integrated Health Belt — Demo Sensor
+            </h1>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0' }}>
+              Waist-worn active belt with bilateral hip airbags, MPU6050 motion classification, and ESP32 edge telemetry.
+            </p>
+          </div>
+        </div>
 
-            {/* Actions: Connect / Disconnect / Reset Airbag */}
-            {isDeployed && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetProtectionSequence}
-                className="border-[#DC2626] text-[#DC2626] hover:bg-[#FEF2F2] text-xs font-semibold"
-              >
-                <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-                Reset Airbag Simulation
-              </Button>
-            )}
-
+        {/* Quick Header Status & Action Controls */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+          {/* Connection badge */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              backgroundColor: 'var(--canvas)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--text)'
+            }}
+          >
             {isConnected ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDisconnect}
-                className="text-xs font-medium text-[#475569] hover:text-[#DC2626] hover:border-[#DC2626]"
-              >
-                <WifiOff className="w-3.5 h-3.5 mr-1.5" />
-                Disconnect Belt
-              </Button>
+              <>
+                <Wifi size={14} color="var(--risk-low)" />
+                <span>BLE Connected</span>
+              </>
             ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleOpenConnect}
-                className="bg-[#0E6B62] hover:bg-[#094842] text-white text-xs font-semibold"
-              >
-                <Wifi className="w-3.5 h-3.5 mr-1.5" />
-                Connect Demo Belt
-              </Button>
+              <>
+                <WifiOff size={14} color="var(--risk-critical)" />
+                <span>Belt Disconnected</span>
+              </>
             )}
           </div>
+
+          {/* Battery status */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              backgroundColor: 'var(--canvas)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--text)'
+            }}
+          >
+            <BatteryCharging size={14} color="var(--risk-low)" />
+            <span className="tabular-nums">{deviceStatus.batteryPct}% LiPo</span>
+          </div>
+
+          {/* Protection status badge */}
+          {isDeployed ? (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                backgroundColor: 'var(--risk-critical-bg)',
+                border: '1px solid var(--risk-critical)',
+                color: 'var(--risk-critical)',
+                fontSize: '12px',
+                fontWeight: 700,
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <AlertTriangle size={14} />
+              Airbag Deployed
+            </span>
+          ) : (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                backgroundColor: 'var(--teal-50)',
+                border: '1px solid var(--teal-300)',
+                color: 'var(--teal-700)',
+                fontSize: '12px',
+                fontWeight: 700,
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <ShieldCheck size={14} />
+              Armed & Ready
+            </span>
+          )}
+
+          {/* Actions: Connect / Disconnect / Reset Airbag */}
+          {isDeployed && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetProtectionSequence}
+              style={{
+                borderColor: 'var(--risk-critical)',
+                color: 'var(--risk-critical)',
+                fontSize: '12px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <RotateCcw size={14} />
+              Reset Airbag Simulation
+            </Button>
+          )}
+
+          {isConnected ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDisconnect}
+              style={{
+                fontSize: '12px',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <WifiOff size={14} />
+              Disconnect Belt
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleOpenConnect}
+              style={{
+                backgroundColor: 'var(--teal-700)',
+                color: '#FFFFFF',
+                fontSize: '12px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <Wifi size={14} />
+              Connect Demo Belt
+            </Button>
+          )}
         </div>
       </div>
 
@@ -185,17 +283,36 @@ export const DevicesPage: React.FC = () => {
 
       {/* Protection Telemetry Timeline (when deployed or post-fall) */}
       {deviceStatus.timeline.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-[#FCA5A5] shadow-sm animate-fadeIn">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-[#FEF2F2] flex items-center justify-center text-[#DC2626]">
-                <ShieldCheck className="w-5 h-5" />
+        <div
+          style={{
+            backgroundColor: 'var(--surface)',
+            borderRadius: 'var(--radius-card)',
+            padding: '24px',
+            border: '1px solid var(--risk-critical)',
+            boxShadow: 'var(--shadow)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'var(--risk-critical-bg)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--risk-critical)'
+                }}
+              >
+                <ShieldCheck size={20} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#111827]">
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
                   Simulated Protection Telemetry Timeline
                 </h3>
-                <p className="text-xs text-[#64748B]">
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
                   Chronological event log of hardware protection sequence (~200ms latency simulation).
                 </p>
               </div>
@@ -204,27 +321,53 @@ export const DevicesPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={resetProtectionSequence}
-              className="text-xs font-semibold text-[#DC2626] border-[#FCA5A5] hover:bg-[#FEF2F2]"
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--risk-critical)',
+                borderColor: 'var(--risk-critical)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
             >
-              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+              <RotateCcw size={14} />
               Reset Demonstration State
             </Button>
           </div>
 
-          <div className="relative border-l-2 border-[#FCA5A5] ml-4 pl-6 space-y-4 my-3">
+          <div style={{ position: 'relative', borderLeft: '2px solid var(--risk-critical)', marginLeft: '16px', paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '16px', margin: '12px 0' }}>
             {deviceStatus.timeline.map((step, idx) => (
-              <div key={idx} className="relative group">
-                <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-[#DC2626] border-2 border-white" />
-                <div className="bg-[#FFF7ED] border border-[#FFEDD5] rounded-xl p-3">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[#9A3412]">
+              <div key={idx} style={{ position: 'relative' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: '-31px',
+                    top: '4px',
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--risk-critical)',
+                    border: '2px solid var(--surface)'
+                  }}
+                />
+                <div
+                  style={{
+                    backgroundColor: '#FFF7ED',
+                    border: '1px solid #FFEDD5',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '12px 14px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                    <span style={{ fontWeight: 700, color: '#9A3412' }}>
                       Stage {idx + 1}: {step.title}
                     </span>
-                    <span className="font-mono text-[#C2410C]">
+                    <span className="tabular-nums" style={{ fontFamily: 'monospace', color: '#C2410C' }}>
                       +{idx * 60}ms offset
                     </span>
                   </div>
-                  <p className="text-xs text-[#7C2D12] mt-1">
+                  <p style={{ fontSize: '12px', color: '#7C2D12', margin: '4px 0 0' }}>
                     {step.details}
                   </p>
                 </div>
@@ -232,7 +375,7 @@ export const DevicesPage: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#FEE2E2] flex items-center justify-between text-[11px] text-[#991B1B]">
+          <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #FEE2E2', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--risk-critical)' }}>
             <span>Status: Inspection / Reset Required — Demonstration State.</span>
             <span>Only an explicit simulation reset restores ready illustration.</span>
           </div>
@@ -240,40 +383,67 @@ export const DevicesPage: React.FC = () => {
       )}
 
       {/* 12-Component Telemetry Matrix */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div
+        style={{
+          backgroundColor: 'var(--surface)',
+          borderRadius: 'var(--radius-card)',
+          border: '1px solid var(--border)',
+          padding: '24px',
+          boxShadow: 'var(--shadow)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
           <div>
-            <span className="text-xs font-semibold text-[#0E6B62] uppercase tracking-wider">
+            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--teal-700)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Component Registry
             </span>
-            <h3 className="text-base font-bold text-[#111827]">
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', margin: '4px 0 0' }}>
               Integrated Component Telemetry (12 Channels)
             </h3>
           </div>
-          <span className="text-xs text-[#64748B]">
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
             Synchronized at 2.0s loop rate
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '14px'
+          }}
+        >
           {deviceStatus.components.map((comp) => {
             const isSelected = selectedComponentId === comp.id;
             return (
               <div
                 key={comp.id}
                 onClick={() => setSelectedComponentId(isSelected ? null : comp.id)}
-                className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  isSelected 
-                    ? 'border-[#0E6B62] bg-[#E6F4F1]/30 shadow-sm' 
-                    : 'border-[#E2E8F0] hover:border-[#CBD5E1] bg-white'
-                }`}
+                style={{
+                  padding: '16px',
+                  borderRadius: 'var(--radius-md)',
+                  border: isSelected ? '1px solid var(--teal-700)' : '1px solid var(--border)',
+                  backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--surface)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
               >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div
+                      style={{
+                        padding: '6px',
+                        borderRadius: 'var(--radius-sm)',
+                        backgroundColor: 'var(--surface-muted)',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
                       {getComponentIcon(comp.id)}
                     </div>
-                    <span className="text-xs font-bold text-[#111827]">
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
                       {comp.name}
                     </span>
                   </div>
@@ -283,7 +453,7 @@ export const DevicesPage: React.FC = () => {
                     size="sm"
                   />
                 </div>
-                <p className="text-xs text-[#475569] leading-relaxed mt-2 pl-8">
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0, paddingLeft: '32px' }}>
                   {comp.details}
                 </p>
               </div>
@@ -293,27 +463,47 @@ export const DevicesPage: React.FC = () => {
       </div>
 
       {/* Future Qualcomm Snapdragon NPU & Hardware Architecture Callout */}
-      <div className="bg-gradient-to-r from-[#F0FDF4] via-[#F8FAFC] to-[#F0FDF4] border border-[#BBF7D0] rounded-2xl p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-[#DCFCE7] flex items-center justify-center text-[#16A34A] shrink-0">
-            <Sparkles className="w-5 h-5" />
+      <div
+        style={{
+          background: 'linear-gradient(90deg, #F0FDF4 0%, var(--canvas) 50%, #F0FDF4 100%)',
+          border: '1px solid #BBF7D0',
+          borderRadius: 'var(--radius-card)',
+          padding: '24px',
+          boxShadow: 'var(--shadow)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: '#DCFCE7',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#16A34A',
+              flexShrink: 0
+            }}
+          >
+            <Sparkles size={20} />
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#15803D] uppercase tracking-wider">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Future Integration Boundary
               </span>
-              <span className="text-[11px] font-mono text-[#166534] bg-[#DCFCE7] px-2 py-0.5 rounded">
+              <span style={{ fontSize: '11px', fontFamily: 'monospace', color: '#166534', backgroundColor: '#DCFCE7', padding: '2px 6px', borderRadius: '4px' }}>
                 Qualcomm Snapdragon NPU
               </span>
             </div>
-            <h4 className="text-sm font-bold text-[#111827]">
+            <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
               On-Device Inference & Wearable Ecosystem Roadmap
             </h4>
-            <p className="text-xs text-[#475569] leading-relaxed">
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
               In production, lightweight quantized edge models will execute on the <strong>Qualcomm Snapdragon Neural Processing Unit (NPU)</strong> via Qualcomm AI Hub ONNX runtime for sub-50ms fall detection. The belt communicates over low-energy <strong>Bluetooth Low Energy (BLE 5.2 GATT)</strong> with the companion application, supporting sensor fusion with commercial smartwatches and medical ECG patches.
             </p>
-            <div className="flex flex-wrap gap-4 pt-1 text-[11px] text-[#64748B]">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', paddingTop: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
               <span>• ESP32 240MHz telemetry bus</span>
               <span>• Dual-core FreeRTOS event dispatcher</span>
               <span>• Zero cloud dependency for fall protection</span>
@@ -329,39 +519,64 @@ export const DevicesPage: React.FC = () => {
         title="Connect Integrated Health Belt"
         maxWidth="md"
       >
-        <div className="space-y-4">
-          <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-[#334155]">Device Identifier:</span>
-              <span className="font-mono text-xs text-[#0E6B62] font-semibold">ESP32-BELT-26181</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div
+            style={{
+              padding: '16px',
+              backgroundColor: 'var(--surface-muted)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)' }}>Device Identifier:</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '12px', color: 'var(--teal-700)', fontWeight: 700 }}>ESP32-BELT-26181</span>
             </div>
-            <div className="flex items-center justify-between text-xs text-[#64748B]">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)' }}>
               <span>Interface Protocol:</span>
               <span>Bluetooth Low Energy 5.2 (Simulated)</span>
             </div>
           </div>
 
           {isPairingInProgress ? (
-            <div className="py-6 text-center space-y-3">
-              <div className="w-10 h-10 mx-auto border-3 border-[#0E6B62] border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-semibold text-[#111827]">
+            <div style={{ padding: '24px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: '3px solid var(--teal-700)',
+                  borderTopColor: 'transparent',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}
+              />
+              <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)', margin: 0 }}>
                 Pairing with ESP32-BELT-26181...
               </p>
-              <p className="text-xs text-[#64748B]">
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
                 Establishing simulated BLE telemetry subscription and sensor stream.
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              <p className="text-xs text-[#4B5563] leading-relaxed">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0 }}>
                 Connect to the simulated Integrated Health Belt to stream live heart rate, SpO₂, body temperature, motion vectors, and battery telemetry.
               </p>
 
-              <div className="p-3 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl text-xs text-[#92400E]">
-                <span className="font-bold">Hardware Note:</span> This connects to the internal software-defined sensor adapter. Physical Bluetooth pairing with live hardware is scheduled for Phase 9 hardware trials.
+              <div
+                style={{
+                  padding: '12px 14px',
+                  backgroundColor: '#FFFBEB',
+                  border: '1px solid #FDE68A',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: '12px',
+                  color: '#92400E'
+                }}
+              >
+                <span style={{ fontWeight: 700 }}>Hardware Note:</span> This connects to the internal software-defined sensor adapter. Physical Bluetooth pairing with live hardware is scheduled for Phase 9 hardware trials.
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '8px' }}>
                 <Button
                   variant="outline"
                   onClick={() => setIsConnectModalOpen(false)}
@@ -371,7 +586,10 @@ export const DevicesPage: React.FC = () => {
                 <Button
                   variant="primary"
                   onClick={handleConfirmConnect}
-                  className="bg-[#0E6B62] text-white hover:bg-[#094842]"
+                  style={{
+                    backgroundColor: 'var(--teal-700)',
+                    color: '#FFFFFF'
+                  }}
                 >
                   Connect Demo Belt
                 </Button>

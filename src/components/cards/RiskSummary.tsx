@@ -96,16 +96,22 @@ export const RiskSummary: React.FC<RiskSummaryProps> = ({
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
             Contributing factors:
           </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {assessment.topFactors.slice(0, 3).map((f) => (
-              <li key={f.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
-                <span style={{ color: 'var(--text)' }}>• {f.label}</span>
-                <span style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
-                  {f.observedValue} (ref: {f.baselineRef})
-                </span>
-              </li>
-            ))}
-          </ul>
+          {assessment.topFactors.length === 0 ? (
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontStyle: 'italic', padding: '2px 0' }}>
+              None identified — all biometric parameters within expected baseline bounds.
+            </div>
+          ) : (
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {assessment.topFactors.slice(0, 3).map((f) => (
+                <li key={f.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                  <span style={{ color: 'var(--text)' }}>• {f.label}</span>
+                  <span style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                    {f.observedValue} (ref: {f.baselineRef})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 

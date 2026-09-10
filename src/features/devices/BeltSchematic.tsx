@@ -20,31 +20,42 @@ export const BeltSchematic: React.FC<BeltSchematicProps> = ({
   const deployedRed = '#DC2626';
 
   return (
-    <div className="relative w-full bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-sm overflow-hidden">
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        backgroundColor: 'var(--surface)',
+        borderRadius: 'var(--radius-card)',
+        padding: '24px',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow)',
+        overflow: 'hidden'
+      }}
+    >
       {/* Schematic Header Bar */}
-      <div className="flex items-center justify-between mb-4">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
         <div>
-          <span className="text-xs font-semibold text-[#0E6B62] uppercase tracking-wider">
+          <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--teal-700)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Hardware Architecture Blueprint
           </span>
-          <h3 className="text-base font-bold text-[#111827]">
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', margin: '4px 0 0' }}>
             Integrated Health Belt — Waist Schematic
           </h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {isDeployed && (
-            <span className="px-3 py-1 bg-[#FEF2F2] border border-[#FCA5A5] text-[#DC2626] font-semibold text-xs rounded-full animate-pulse">
+            <span style={{ padding: '4px 12px', backgroundColor: 'var(--risk-critical-bg)', border: '1px solid var(--risk-critical)', color: 'var(--risk-critical)', fontWeight: 700, fontSize: '12px', borderRadius: '9999px' }}>
               Airbags Deployed (Simulation)
             </span>
           )}
           {isDisconnected && (
-            <span className="px-3 py-1 bg-[#F1F5F9] border border-[#CBD5E1] text-[#64748B] font-semibold text-xs rounded-full">
+            <span style={{ padding: '4px 12px', backgroundColor: 'var(--surface-muted)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '12px', borderRadius: '9999px' }}>
               Belt Offline / Disconnected
             </span>
           )}
           {!isDeployed && !isDisconnected && (
-            <span className="px-3 py-1 bg-[#E6F4F1] border border-[#A7D7CF] text-[#0E6B62] font-semibold text-xs rounded-full flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#0E6B62] animate-ping" />
+            <span style={{ padding: '4px 12px', backgroundColor: 'var(--teal-50)', border: '1px solid var(--teal-300)', color: 'var(--teal-700)', fontWeight: 700, fontSize: '12px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--teal-700)' }} />
               Protection Ready & Armed
             </span>
           )}
@@ -52,10 +63,22 @@ export const BeltSchematic: React.FC<BeltSchematicProps> = ({
       </div>
 
       {/* SVG Belt Illustration */}
-      <div className="relative w-full flex justify-center items-center py-4 bg-[#F8FAFC] rounded-xl border border-[#F1F5F9]">
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '16px 0',
+          backgroundColor: 'var(--canvas)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border)'
+        }}
+      >
         <svg
           viewBox="0 0 900 380"
-          className="w-full max-w-4xl h-auto select-none"
+          style={{ width: '100%', maxWidth: '900px', height: 'auto', userSelect: 'none' }}
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>

@@ -85,6 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <li key={dest.id}>
                 <button
                   onClick={() => onSelectDestination(dest.id)}
+                  aria-current={isActive ? 'page' : undefined}
                   style={{
                     width: '100%',
                     display: 'flex',
@@ -126,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span style={{ fontWeight: 600 }}>Desktop 1366×768</span>
         </div>
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
-          SIH Prototype v0.1 • Phase 1
+          SIH Prototype v1.0 • Desktop Companion
         </div>
       </div>
     </aside>

@@ -15,23 +15,86 @@ import { ProfilePage } from './features/profile/ProfilePage';
 import { OnboardingModal } from './features/onboarding/OnboardingModal';
 import { DemoControlsDrawer } from './features/demo/DemoControlsDrawer';
 import { useConnectivityAndPWA } from './hooks/useConnectivityAndPWA';
+import { ScenarioType } from './domain/types';
 
 export const App: React.FC = () => {
-  const [activeDestination, setActiveDestination] = useState<string>('overview');
+  // Parse route and evaluation parameters from hash/URL
+  const parseRouteAndParams = () => {
+    if (typeof window === 'undefined') return { dest: 'overview', scenario: null, offline: null };
+    const hash = window.location.hash.replace('#', '');
+    const [routePart, queryPart] = hash.split('?');
+    const params = new URLSearchParams(queryPart || window.location.search);
+    const rawScenario = params.get('scenario');
+    const scenario = rawScenario === 'heat' ? 'heat_wave' : (rawScenario as ScenarioType | null);
+    return {
+      dest: routePart || 'overview',
+      scenario,
+      offline: params.has('offline') ? params.get('offline') === 'true' : null
+    };
+  };
+
+  const [activeDestination, setActiveDestination] = useState<string>(() => {
+    return parseRouteAndParams().dest;
+  });
   const [isDemoControlsOpen, setIsDemoControlsOpen] = useState<boolean>(false);
   const { needRefresh, updateApp } = useConnectivityAndPWA();
   const [dismissUpdateBanner, setDismissUpdateBanner] = useState<boolean>(false);
+  const accessibilityChoices = useCompanionStore((state) => state.settings.accessibilityChoices);
 
   // Initialize store and root simulator on mount
   useEffect(() => {
     useCompanionStore.getState().init();
   }, []);
 
+  // Hash & URL evaluation parameters sync
+  useEffect(() => {
+    const applyUrlState = () => {
+      const { dest, scenario, offline } = parseRouteAndParams();
+      if (dest) {
+        setActiveDestination(dest);
+      }
+      if (scenario) {
+        useCompanionStore.getState().setScenario(scenario);
+      }
+      if (offline !== null) {
+        useCompanionStore.getState().setSimulatedOffline(offline);
+      }
+    };
+
+    applyUrlState();
+    window.addEventListener('hashchange', applyUrlState);
+    return () => window.removeEventListener('hashchange', applyUrlState);
+  }, []);
+
+  const handleNavigate = (dest: string) => {
+    setActiveDestination(dest);
+    if (typeof window !== 'undefined') {
+      window.location.hash = dest;
+    }
+  };
+
+  // Sync accessibility options to document root attributes
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (accessibilityChoices?.reducedMotion) {
+        document.documentElement.setAttribute('data-reduced-motion', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-reduced-motion');
+      }
+
+      if (accessibilityChoices?.highContrast) {
+        document.documentElement.setAttribute('data-high-contrast', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-high-contrast');
+      }
+    }
+  }, [accessibilityChoices]);
+
   // Router for destinations
   const renderCurrentView = () => {
     switch (activeDestination) {
       case 'overview':
-        return <OverviewPage onNavigate={(dest) => setActiveDestination(dest)} />;
+        return <OverviewPage onNavigate={handleNavigate} />;
       case 'health':
         return <HealthPage />;
       case 'ai-analysis':
@@ -39,7 +102,7 @@ export const App: React.FC = () => {
       case 'environment':
         return <EnvironmentPage />;
       case 'alerts':
-        return <AlertsPage onNavigate={(dest) => setActiveDestination(dest)} />;
+        return <AlertsPage onNavigate={handleNavigate} />;
       case 'devices':
         return <DevicesPage />;
       case 'emergency':
@@ -49,7 +112,7 @@ export const App: React.FC = () => {
       case 'profile-settings':
         return <ProfilePage />;
       default:
-        return <OverviewPage onNavigate={(dest) => setActiveDestination(dest)} />;
+        return <OverviewPage onNavigate={handleNavigate} />;
     }
   };
 
@@ -66,7 +129,7 @@ export const App: React.FC = () => {
       {/* Fixed 216px Left Sidebar */}
       <Sidebar
         activeDestination={activeDestination}
-        onSelectDestination={(id) => setActiveDestination(id)}
+        onSelectDestination={handleNavigate}
       />
 
       {/* Main Workstation Viewport */}
@@ -100,7 +163,7 @@ export const App: React.FC = () => {
 
       {/* Global Fall Check-In Modal ("Are you okay?" 20-second escalation countdown) */}
       <FallCheckInModal
-        onNavigateToEmergency={() => setActiveDestination('emergency')}
+        onNavigateToEmergency={() => handleNavigate('emergency')}
       />
 
       {/* Four-Step Onboarding Wizard Modal */}

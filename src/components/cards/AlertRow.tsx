@@ -23,6 +23,14 @@ export const AlertRow: React.FC<AlertRowProps> = ({ alert, onClick }) => {
   return (
     <div
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       style={{
         padding: '12px 14px',
         borderRadius: 'var(--radius-md)',
@@ -35,19 +43,19 @@ export const AlertRow: React.FC<AlertRowProps> = ({ alert, onClick }) => {
         transition: 'border-color var(--transition-fast)'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
           <StatusBadge tone={alert.severity} label={alert.severity.toUpperCase()} size="sm" />
-          <span style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text)' }}>
+          <span style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
             {alert.title}
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-tertiary)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
           <Clock size={12} />
           <span>{timeStr}</span>
         </div>
       </div>
-      <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+      <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
         {alert.reason}
       </p>
     </div>

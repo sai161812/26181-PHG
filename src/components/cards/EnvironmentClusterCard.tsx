@@ -29,6 +29,12 @@ export const EnvironmentClusterCard: React.FC<EnvironmentClusterCardProps> = ({
       }}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
         <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>

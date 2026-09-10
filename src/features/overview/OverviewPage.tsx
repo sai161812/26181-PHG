@@ -34,22 +34,22 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
   const hrVal = currentReading.hr ?? baseline.restingHR;
   const hrDeviationPct = BaselineManager.calculateHRDeviationPct(hrVal, baseline.restingHR);
   const hrDeltaText = hrDeviationPct === 0 
-    ? '0% from baseline' 
-    : `${hrDeviationPct > 0 ? '+' : ''}${hrDeviationPct}% from baseline`;
-  const hrTone = hrDeviationPct > 35 ? 'critical' : hrDeviationPct > 20 ? 'warning' : 'neutral';
+    ? '0% baseline' 
+    : `${hrDeviationPct > 0 ? '+' : ''}${hrDeviationPct}% baseline`;
+  const hrTone = hrDeviationPct >= 35 ? 'critical' : (hrDeviationPct >= 20 ? 'warning' : 'neutral');
 
   const spo2Val = currentReading.spo2 ?? baseline.spo2;
   const spo2DiffPp = BaselineManager.calculateSpO2DiffPp(spo2Val, baseline.spo2);
   const spo2DeltaText = spo2DiffPp === 0
-    ? '0 pp from baseline'
-    : `${spo2DiffPp > 0 ? '-' : '+'}${Math.abs(spo2DiffPp)} pp from baseline`;
+    ? '0 pp baseline'
+    : `${spo2DiffPp > 0 ? '-' : '+'}${Math.abs(spo2DiffPp)} pp baseline`;
   const spo2Tone = spo2DiffPp >= 3 ? 'critical' : 'neutral';
 
   const tempVal = currentReading.bodyTemperatureC ?? baseline.bodyTemperatureC;
   const tempDelta = BaselineManager.calculateTempDelta(tempVal, baseline.bodyTemperatureC);
   const tempDeltaText = tempDelta === 0 
     ? 'Nominal' 
-    : `${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C from baseline`;
+    : `${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C baseline`;
   const tempTone = tempDelta >= 0.8 ? 'warning' : 'neutral';
 
   const activityMin = currentReading.activityMinutes ?? 30;
@@ -74,7 +74,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
         }}
       >
         <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text)', margin: 0, lineHeight: 1.2 }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text)', margin: 0, lineHeight: 1.2, maxWidth: '650px', overflowWrap: 'break-word' }}>
             Good evening, {profile.name}
           </h2>
           <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -155,9 +155,9 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
       {/* ROW 3: Current Measurements (Unequal Compact Information Cards) */}
       <div
         style={{
-          display: 'flex',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, minmax(0, 1fr)) minmax(0, 1.35fr)',
           gap: '16px',
-          flexWrap: 'wrap',
           alignItems: 'stretch'
         }}
       >
@@ -166,7 +166,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           title="Heart rate"
           value={hrVal}
           unit="BPM"
-          subtext={`Baseline: ${baseline.restingHR} BPM (${baseline.source})`}
+          subtext={`Baseline: ${baseline.restingHR} BPM • ${baseline.source.replace(/^\(|\)$/g, '')}`}
           deltaText={hrDeltaText}
           deltaTone={hrTone}
           sparkline={hrSparkline.length > 1 ? hrSparkline : [71, 72, 73, 72, hrVal]}

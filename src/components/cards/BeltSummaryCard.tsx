@@ -44,7 +44,11 @@ export const BeltSummaryCard: React.FC<BeltSummaryCardProps> = ({
               <BatteryCharging size={15} color="var(--teal-700)" />
               <span style={{ fontVariantNumeric: 'tabular-nums' }}>{beltStatus.batteryPct}%</span>
             </div>
-            <StatusBadge tone="low" label="Connected" pulse />
+            <StatusBadge
+              tone={beltStatus.connectionState === 'connected' ? 'low' : 'critical'}
+              label={beltStatus.connectionState === 'connected' ? 'Connected' : 'Disconnected'}
+              pulse={beltStatus.connectionState === 'connected'}
+            />
           </div>
         </div>
 
@@ -57,17 +61,23 @@ export const BeltSummaryCard: React.FC<BeltSummaryCardProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Motion status:</span>
-            <span style={{ fontWeight: 600, color: 'var(--text)' }}>{beltStatus.motionStatus}</span>
+            <span style={{ fontWeight: 600, color: 'var(--text)' }}>
+              {beltStatus.connectionState === 'connected' ? beltStatus.motionStatus : 'Offline'}
+            </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
             <span style={{ color: 'var(--text-secondary)' }}>MPU6050 channel:</span>
-            <span style={{ color: 'var(--teal-700)', fontWeight: 500 }}>Active telemetry</span>
+            <span style={{ color: beltStatus.connectionState === 'connected' ? 'var(--teal-700)' : 'var(--risk-critical)', fontWeight: 500 }}>
+              {beltStatus.connectionState === 'connected' ? 'Active telemetry' : 'Disconnected (No feed)'}
+            </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Airbag readiness:</span>
-            <span style={{ color: 'var(--risk-low)', fontWeight: 600 }}>Armed • Solenoid ready</span>
+            <span style={{ color: beltStatus.connectionState === 'connected' ? 'var(--risk-low)' : 'var(--text-tertiary)', fontWeight: 600 }}>
+              {beltStatus.connectionState === 'connected' ? 'Armed • Solenoid ready' : 'Telemetry lost • Reconnect belt'}
+            </span>
           </div>
         </div>
       </div>

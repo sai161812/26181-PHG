@@ -1032,7 +1032,7 @@ export const HealthPage: React.FC = () => {
             {/* Recharts Area / Line Chart */}
             <div style={{ height: '260px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={currentSeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={currentSeries} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="metricGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="var(--teal-600)" stopOpacity={0.2} />
@@ -1042,6 +1042,7 @@ export const HealthPage: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="timeLabel" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} />
                   <YAxis 
+                    width={55}
                     domain={
                       selectedMetric === 'spo2' ? [90, 100] :
                       selectedMetric === 'temp' ? [35.5, 39.0] :
@@ -1067,13 +1068,13 @@ export const HealthPage: React.FC = () => {
                     label={{ value: `Baseline (${insights.baselineVal})`, fill: 'var(--teal-700)', fontSize: 11, position: 'right' }}
                   />
                   {selectedMetric === 'spo2' && (
-                    <ReferenceLine y={95} stroke="var(--rose-400)" strokeDasharray="4 4" label={{ value: 'Clinical Floor', fill: 'var(--rose-600)', fontSize: 11 }} />
+                    <ReferenceLine y={95} stroke="var(--risk-critical)" strokeDasharray="4 4" label={{ value: 'Clinical Floor', fill: 'var(--risk-critical)', fontSize: 11 }} />
                   )}
                   {selectedMetric === 'risk' && (
                     <>
-                      <ReferenceLine y={30} stroke="var(--teal-600)" strokeDasharray="2 2" label={{ value: 'Low (0-30)', fill: 'var(--teal-700)', fontSize: 10 }} />
-                      <ReferenceLine y={60} stroke="var(--amber-500)" strokeDasharray="2 2" label={{ value: 'Moderate (31-60)', fill: 'var(--amber-700)', fontSize: 10 }} />
-                      <ReferenceLine y={80} stroke="var(--rose-500)" strokeDasharray="2 2" label={{ value: 'High (61-80)', fill: 'var(--rose-700)', fontSize: 10 }} />
+                      <ReferenceLine y={30} stroke="var(--risk-low)" strokeDasharray="2 2" label={{ value: 'Low (0-30)', fill: 'var(--risk-low)', fontSize: 10 }} />
+                      <ReferenceLine y={60} stroke="var(--risk-moderate)" strokeDasharray="2 2" label={{ value: 'Moderate (31-60)', fill: 'var(--risk-moderate)', fontSize: 10 }} />
+                      <ReferenceLine y={80} stroke="var(--risk-critical)" strokeDasharray="2 2" label={{ value: 'High (61-80)', fill: 'var(--risk-critical)', fontSize: 10 }} />
                     </>
                   )}
                   <Area

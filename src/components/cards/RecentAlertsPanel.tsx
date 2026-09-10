@@ -39,11 +39,27 @@ export const RecentAlertsPanel: React.FC<RecentAlertsPanelProps> = ({
           </span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {alerts.slice(0, 3).map((a) => (
-            <AlertRow key={a.id} alert={a} onClick={onViewAllAlerts} />
-          ))}
-        </div>
+        {alerts.length === 0 ? (
+          <div
+            style={{
+              padding: '24px 16px',
+              backgroundColor: 'var(--canvas)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border)',
+              textAlign: 'center',
+              color: 'var(--text-tertiary)',
+              fontSize: '13px'
+            }}
+          >
+            No active alert episodes recorded. All metrics nominal.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {alerts.slice(0, 3).map((a) => (
+              <AlertRow key={a.id} alert={a} onClick={onViewAllAlerts} />
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>

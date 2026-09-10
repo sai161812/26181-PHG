@@ -183,6 +183,14 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
                 <div
                   key={sc.id}
                   onClick={() => setScenario(sc.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setScenario(sc.id);
+                    }
+                  }}
                   style={{
                     padding: '12px 14px',
                     borderRadius: 'var(--radius-md)',
