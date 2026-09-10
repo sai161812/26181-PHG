@@ -12,12 +12,12 @@ export class AlertManager {
   ): Alert[] {
     let updatedAlerts = [...currentAlerts];
 
-    // Evaluate each physiological category for alerts (threshold: score >= 61 High)
-    const categoriesToTrack = ['heat', 'respiratory', 'fatigue', 'cardiovascular'] as const;
+    // Evaluate physiological categories and fall for alerts (threshold: score >= 61 High, or fall Critical)
+    const categoriesToTrack = ['heat', 'respiratory', 'fatigue', 'cardiovascular', 'fall'] as const;
 
     for (const cat of categoriesToTrack) {
       const catResult = assessment.categoryResults[cat];
-      const isHigh = catResult.status === 'available' && (catResult.severity === 'high' || catResult.severity === 'critical');
+      const isHigh = catResult && catResult.status === 'available' && (catResult.severity === 'high' || catResult.severity === 'critical');
       const currentHighCount = this.consecutiveHighSamplesByCategory.get(cat) || 0;
       const currentNormalCount = this.consecutiveNormalSamplesByCategory.get(cat) || 0;
       const activeEpisode = this.activeEpisodeByCategory.get(cat);
@@ -27,8 +27,10 @@ export class AlertManager {
         this.consecutiveHighSamplesByCategory.set(cat, nextHighCount);
         this.consecutiveNormalSamplesByCategory.set(cat, 0);
 
-        // 2 consecutive qualifying samples trigger or update active alert
-        if (nextHighCount >= 2) {
+        // Fall triggers immediately (1 sample); physiological alerts require 2 consecutive qualifying samples
+        const requiredSamples = cat === 'fall' ? 1 : 2;
+
+        if (nextHighCount >= requiredSamples) {
           if (!activeEpisode) {
             // Create new deduplicated active episode
             const newAlert: Alert = {
@@ -77,6 +79,20 @@ export class AlertManager {
     return updatedAlerts;
   }
 
+  public resolveSupersededEpisodes(currentAlerts: Alert[], newScenarioName: string): Alert[] {
+    this.clearAllEpisodes();
+    return currentAlerts.map(a => {
+      if (!a.resolvedAt) {
+        return {
+          ...a,
+          resolvedAt: Date.now(),
+          reason: `${a.reason} (Superseded: Demo switched to ${newScenarioName})`
+        };
+      }
+      return a;
+    });
+  }
+
   public acknowledgeAlert(alertId: string, currentAlerts: Alert[]): Alert[] {
     return currentAlerts.map(a => {
       if (a.id === alertId) {
@@ -112,6 +128,8 @@ export class AlertManager {
       case 'respiratory': return `${sevLabel} Respiratory Strain Alert`;
       case 'fatigue': return `${sevLabel} Physical Fatigue Alert`;
       case 'cardiovascular': return `${sevLabel} Cardiovascular Anomaly Detected`;
+      case 'fall': return 'Critical Fall Detected — Airbag Protection Sequence Armed';
+      case 'disaster': return 'Municipal Disaster Advisory Bulletin';
       default: return `${sevLabel} Health Warning`;
     }
   }
@@ -122,6 +140,8 @@ export class AlertManager {
       case 'respiratory': return 'Move indoors away from vehicular pollution and avoid strenuous outdoor exercise.';
       case 'fatigue': return 'Sit down in a safe location, rest, and allow your resting heart rate to stabilize.';
       case 'cardiovascular': return 'Remain resting seated and verify pulse reading.';
+      case 'fall': return 'Check user status immediately. Confirm "Are You Okay?" prompt within 20s or emergency SOS initiates.';
+      case 'disaster': return 'Follow official civil defense recommendations. Prepare emergency essentials.';
       default: return 'Rest and check in with your caregiver if symptoms persist.';
     }
   }

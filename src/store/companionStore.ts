@@ -67,6 +67,53 @@ const repository = new LocalStorageRepository();
 
 let isSimulatorSubscribed = false;
 
+const INITIAL_DEMO_ALERTS: Alert[] = [
+  {
+    id: 'alt-init-01',
+    episodeId: 'ep-init-01',
+    category: 'system',
+    severity: 'low',
+    title: 'Daily baseline calibration verified',
+    reason: '30-day resting heart rate (72 BPM) and SpO₂ (98%) medians synchronized with personal baseline.',
+    recommendedAction: 'No action required. Personal baseline active.',
+    inputSnapshot: {
+      hr: 72,
+      spo2: 98,
+      bodyTemp: 36.7,
+      ambientC: 30,
+      humidity: 60,
+      aqi: 60
+    },
+    createdAt: Date.now() - 2 * 60 * 60 * 1000,
+    lastSeenAt: Date.now() - 2 * 60 * 60 * 1000,
+    consecutiveSamples: 3,
+    acknowledgedAt: Date.now() - 110 * 60 * 1000,
+    resolvedAt: Date.now() - 100 * 60 * 1000
+  },
+  {
+    id: 'alt-init-02',
+    episodeId: 'ep-init-02',
+    category: 'device',
+    severity: 'low',
+    title: 'Integrated belt connected successfully',
+    reason: 'Simulated MPU6050 motion channel and ESP32 telemetry feed established.',
+    recommendedAction: 'Verify comfortable belt strap fit around waist.',
+    inputSnapshot: {
+      hr: 72,
+      spo2: 98,
+      bodyTemp: 36.7,
+      ambientC: 30,
+      humidity: 60,
+      aqi: 60
+    },
+    createdAt: Date.now() - 3 * 60 * 60 * 1000,
+    lastSeenAt: Date.now() - 3 * 60 * 60 * 1000,
+    consecutiveSamples: 3,
+    acknowledgedAt: Date.now() - 170 * 60 * 1000,
+    resolvedAt: null
+  }
+];
+
 export const useCompanionStore = create<CompanionState>((set, get) => {
   // Initial synchronous default assessment
   const initialReading = sensorAdapter.getCurrentReading();
@@ -99,7 +146,7 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
     liveBufferSpO2: [{ time: '10:50', value: 98, baseline: 98 }],
     environment: initialEnv,
     riskAssessment: initialAssessment,
-    alerts: [],
+    alerts: INITIAL_DEMO_ALERTS,
     deviceStatus: DeviceManager.createDefaultDeviceStatus(),
     settings: {
       schemaVersion: 1,
@@ -227,8 +274,11 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
     setScenario: (scenario: ScenarioType) => {
       const state = get();
 
-      // Reset active episodes when scenario changes
-      alertManager.clearAllEpisodes();
+      // Resolve superseded active episodes when demo scenario changes
+      const updatedAlerts = alertManager.resolveSupersededEpisodes(
+        state.alerts, 
+        SCENARIO_SETPOINTS[scenario]?.name || scenario
+      );
 
       sensorAdapter.setScenario(scenario);
       environmentProvider.setScenario(scenario);
@@ -242,6 +292,7 @@ export const useCompanionStore = create<CompanionState>((set, get) => {
       }
 
       set({
+        alerts: updatedAlerts,
         deviceStatus: nextDeviceStatus,
         demoState: {
           ...state.demoState,

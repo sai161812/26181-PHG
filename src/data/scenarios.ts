@@ -179,7 +179,7 @@ export const SCENARIO_SETPOINTS: Record<ScenarioType, ScenarioSetpoint> = {
     },
     environment: {
       ambientC: 28,
-      humidityPct: 85,
+      humidityPct: 68,
       aqi: 50,
       locationLabel: 'Adyar basin, Chennai',
       outdoor: false,
@@ -209,7 +209,7 @@ export const SCENARIO_SETPOINTS: Record<ScenarioType, ScenarioSetpoint> = {
     },
     environment: {
       ambientC: 26,
-      humidityPct: 90,
+      humidityPct: 70,
       aqi: 40,
       locationLabel: 'Coastal Chennai',
       outdoor: false,

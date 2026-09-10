@@ -5,8 +5,8 @@ import { TopBar } from './app/TopBar';
 import { OverviewPage } from './features/overview/OverviewPage';
 import { HealthPage } from './features/health/HealthPage';
 import { AnalysisPage } from './features/analysis/AnalysisPage';
-import { EnvironmentScaffold } from './features/environment/EnvironmentScaffold';
-import { AlertsScaffold } from './features/alerts/AlertsScaffold';
+import { EnvironmentPage } from './features/environment/EnvironmentPage';
+import { AlertsPage } from './features/alerts/AlertsPage';
 import { DevicesScaffold } from './features/devices/DevicesScaffold';
 import { EmergencyScaffold } from './features/emergency/EmergencyScaffold';
 import { PrivacyScaffold } from './features/privacy/PrivacyScaffold';
@@ -32,9 +32,9 @@ export const App: React.FC = () => {
       case 'ai-analysis':
         return <AnalysisPage />;
       case 'environment':
-        return <EnvironmentScaffold />;
+        return <EnvironmentPage />;
       case 'alerts':
-        return <AlertsScaffold />;
+        return <AlertsPage onNavigate={(dest) => setActiveDestination(dest)} />;
       case 'devices':
         return <DevicesScaffold />;
       case 'emergency':

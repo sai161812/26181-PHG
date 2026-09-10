@@ -6,8 +6,8 @@
 **Category:** Hardware / MedTech / HealthTech  
 **Platform Target:** Desktop-First (Demonstrated on a Laptop, 1366×768 base, 1920×1080 responsive)  
 **Total Allocated Budget:** 15 Hours  
-**Current Phase:** Phase 3 — Health and Explanation Experience (COMPLETED)  
-**Next Phase:** Phase 4 — Environment and Alerts Workspace (PENDING)  
+**Current Phase:** Phase 4 — Environment and Alerts Workspace (COMPLETED)  
+**Next Phase:** Phase 5 — Belt, Fall and SOS Demonstration (PENDING)  
 
 ---
 
@@ -19,6 +19,7 @@
 | **Phase 1 Status** | **PASSED (Green)** | Desktop shell complete, design tokens locked to `SIH26181_UI_PREFERENCE.md`, polished 4-row Overview, reusable primitives, Demo Controls drawer layout, verified at 1366×768 and 1920×1080 |
 | **Phase 2 Status** | **PASSED (Green)** | Shared Zustand store, domain types, managers, replaceable adapters, deterministic 30-day history, root 2-second simulator, 12/12 unit tests passing, settled scores verified (Normal 18, Heat 78, Pollution 68, Fatigue 58, Extreme Heat 93) |
 | **Phase 3 Status** | **PASSED (Green)** | Health workspace completed (Live stream with diagnostics, Personal Baseline with manual resting HR protection, Longitudinal Trends with 6 metrics and Today/7D/30D windows), AI Analysis completed (5 real processing stages, transparent factor decomposition table, 5 anomaly categories, truthful confidence disclosure), 15/15 unit tests passing |
+| **Phase 4 Status** | **PASSED (Green)** | Environmental Safety completed (2×2 hazard matrix for Heat, AQI, Flood, Cyclone; timestamped freshness; municipal disaster separation maintaining nominal baseline 18 / Low; non-diagnostic CDC/NDMA advice), Alerts workspace completed (Status tabs, category/severity filters, frozen input snapshot drawer, 2-sample trigger, 3-sample normal resolution, 1-episode deduplication, escalation, scenario superseding), 25/25 unit tests passing |
 | **Active Target Viewport** | **Desktop-First (Laptop)** | Fixed sidebar (216px) & topbar (64px); 7/5 column balance; responsive 1366×768 base and 1920×1080 full HD |
 | **Overview Screen** | **Fully Wired** | Direct links from metric cards and risk summary to Health tabs and AI Analysis detail |
 | **Belt Identity** | **Verified** | Custom vector SVG waist-worn belt schematic with dual airbag deployment pods, ESP32 MCU housing, and MPU6050 status |
@@ -34,8 +35,8 @@
 | **1. Desktop visual foundation** | 90 min | 2:00 | Approved shell, design tokens, responsive grid (1366×768 / 1920×1080), polished Overview with 7 metrics and belt summary, Demo Controls drawer layout. | **COMPLETE** |
 | **2. Local domain and simulation** | 120 min | 4:00 | Shared Zustand store, domain types, managers, replaceable adapters, deterministic 30-day history, root 2-second simulator, settled scenario scores (Normal 18, Heat 78, Pollution 68, Fatigue 58). | **COMPLETE** |
 | **3. Health and explanation experience** | 120 min | 6:00 | Health workspace (Live, Baseline, Trends tabs), 6 metric trend charts (Today/7D/30D), AI Analysis 5 processing stages and factor explanations. | **COMPLETE** |
-| **4. Environment and alerts** | 90 min | 7:30 | Environmental Safety & Disasters (Heat, AQI, Flood, Cyclone), Alerts workspace with deduplication, input snapshots, 2-sample trigger, 3-sample resolution. | **NEXT** |
-| **5. Belt, fall and SOS** | 90 min | 9:00 | Local SVG belt illustration, 10 component statuses, Connect flow, Possible Fall protection timeline + "Are you okay?" 20s check-in, consent-filtered demo SOS payload. | PENDING |
+| **4. Environment and alerts** | 90 min | 7:30 | Environmental Safety & Disasters (Heat, AQI, Flood, Cyclone), Alerts workspace with deduplication, input snapshots, 2-sample trigger, 3-sample resolution. Gate: sustained heat produces 1 active alert, acknowledgement does not erase risk, flood leaves vitals normal. | **COMPLETE** |
+| **5. Belt, fall and SOS** | 90 min | 9:00 | Local SVG belt illustration, 10 component statuses, Connect flow, Possible Fall protection timeline + "Are you okay?" 20s check-in, consent-filtered demo SOS payload. | **NEXT** |
 | **6. Onboarding, profile and privacy** | 90 min | 10:30 | 4-step onboarding wizard, Profile editing, resting HR provenance, Privacy Center with local laptop processing and confirmed data deletion. | PENDING |
 | **7. Offline and integration** | 120 min | 12:30 | PWA app shell offline reload under service worker, synthetic offline context vs cached bulletins, cross-route coherence. Feature and dependency freeze. | PENDING |
 | **8. Visual and interaction finish** | 60 min | 13:30 | 1366×768 and 1920×1080 usability sweep, keyboard focus, contrast check, reduced-motion support, no clipping or horizontal scroll. | PENDING |
