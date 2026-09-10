@@ -7,10 +7,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'Health Companion - SIH26181',
+        name: 'Health Companion',
         short_name: 'HealthCompanion',
         description: 'Desktop Health Companion for Integrated AI Health Belt',
         theme_color: '#0E6B62',
