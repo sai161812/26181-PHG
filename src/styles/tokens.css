@@ -1,0 +1,80 @@
+:root {
+  /* Binding Color Palette from SIH26181_UI_PREFERENCE.md */
+  --canvas: #F4F6F5;
+  --surface: #FFFFFF;
+  --surface-muted: #EEF3F1;
+  --border: #D9E3DF;
+  --text: #162B2B;
+  --text-secondary: #58706E;
+  --text-tertiary: #7C908E;
+  
+  --teal-700: #0E6B62;
+  --teal-600: #137C71;
+  --teal-100: #DCEFEA;
+  
+  /* Risk Semantic Tokens */
+  --risk-low: #25845C;
+  --risk-low-bg: #E2F3E9;
+  --risk-moderate: #A96808;
+  --risk-moderate-bg: #FFF1D6;
+  --risk-high: #BF6417;
+  --risk-high-bg: #FFF0E3;
+  --risk-critical: #B53A3A;
+  --risk-critical-bg: #FCE6E6;
+  
+  --shadow: 0 1px 2px rgba(20, 44, 43, .05), 0 6px 18px rgba(20, 44, 43, .045);
+
+  /* Legacy aliases for backward compatibility */
+  --bg-page: var(--canvas);
+  --bg-surface: var(--surface);
+  --border-subtle: var(--border);
+  --text-main: var(--text);
+  --text-muted: var(--text-tertiary);
+  --accent-primary: var(--teal-700);
+  --accent-primary-hover: var(--teal-600);
+  --accent-surface: var(--teal-100);
+
+  /* Typography */
+  --font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 28px;
+  --font-size-num: 32px;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Layout Dimensions */
+  --sidebar-width: 216px;
+  --topbar-height: 64px;
+  --content-max-width: 1440px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-card: 12px;
+  --radius-dialog: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
