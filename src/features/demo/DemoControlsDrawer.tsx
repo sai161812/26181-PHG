@@ -107,7 +107,7 @@ export const DemoControlsDrawer: React.FC<DemoControlsDrawerProps> = ({
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
-      title="SIH Demo Controls"
+      title="Demo Controls"
       subtitle="Evaluator presentation triggers & real-time simulation orchestrator"
       width="460px"
     >

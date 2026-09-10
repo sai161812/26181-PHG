@@ -217,14 +217,14 @@ export const TopBar: React.FC<TopBarProps> = ({
           </span>
         </div>
 
-        {/* SIH Demo Controls Drawer Button */}
+        {/* Demo Controls Drawer Button */}
         <Button
           variant="primary"
           size="sm"
           icon={<SlidersHorizontal size={14} />}
           onClick={onOpenDemoControls}
         >
-          SIH Demo Controls
+          Demo Controls
         </Button>
       </div>
     </header>

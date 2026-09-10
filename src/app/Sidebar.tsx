@@ -56,9 +56,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div style={{ fontWeight: 650, fontSize: '15px', color: 'var(--text)', lineHeight: 1.2 }}>
             {APP_CONFIG.appName}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
-            {APP_CONFIG.problemStatementId} • {APP_CONFIG.teamName}
-          </div>
         </div>
       </div>
 

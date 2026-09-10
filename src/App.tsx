@@ -155,7 +155,7 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      {/* SIH Demo Controls Drawer */}
+      {/* Demo Controls Drawer */}
       <DemoControlsDrawer
         isOpen={isDemoControlsOpen}
         onClose={() => setIsDemoControlsOpen(false)}

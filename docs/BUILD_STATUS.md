@@ -6,8 +6,8 @@
 **Category:** Hardware / MedTech / HealthTech  
 **Platform Target:** Desktop-First (Demonstrated on a Laptop, 1366×768 base, 1920×1080 responsive)  
 **Total Allocated Budget:** 15 Hours  
-**Current Phase:** Phase 8 — Visual and Interaction Finish (COMPLETED)  
-**Next Phase:** Phase 9 — Verification and Rehearsal (PENDING)  
+**Current Phase:** Phase 9 — Verification, Documentation & Packaging (COMPLETED)  
+**Project Status:** ALL 15-HOUR ROADMAP PHASES COMPLETED (0–9)  
 **Feature & Dependency Freeze:** ACTIVE.
 
 ---
@@ -25,6 +25,7 @@
 | **Phase 6 Status** | **PASSED (Green)** | 4-step onboarding wizard with local laptop edge processing disclosure and fast-track demo profile (Ravi, 62); Profile editing with real-time validation, save/cancel states, and protected manual resting-HR provenance; Privacy Center with edge isolation badges, granular SOS payload sharing toggles with live JSON preview, Phase 7 cache readiness placeholder, and confirmed data deletion flow; 54/54 unit tests passing |
 | **Phase 7 Status** | **PASSED (Green)** | Production PWA app-shell cache verified (17 precached entries, prompt update registration, navigateFallback); 4 distinct states separated (Belt connection, Demo-offline mode, Browser network hint, App-cache readiness); synthetic offline scenario context distinguished from unchanged cached external snapshots; root ErrorBoundary; 59/59 unit tests passing; Feature and dependency freeze ACTIVE |
 | **Phase 8 Status** | **PASSED (Green)** | Visual and interaction finish completed for laptop (1366×768 base and 1920×1080 full HD). Fixed clipped text, overflow, number widths (`tabular-nums`), chart labels/margins, accessible contrast, `:focus-visible` outlines, reduced-motion overrides. Verified across all routes. 6 required screenshots captured and validated. |
+| **Phase 9 Status** | **PASSED (Green)** | Verification & packaging completed: root `README.md`, `docs/DEMO_SCRIPT.md`, `docs/VERIFICATION.md`, and `docs/FUTURE_INTEGRATION.md` created. Section 12 acceptance checklist 100% verified. Header branding streamlined and Demo Controls renamed. 59/59 unit tests passing. Clean production PWA build. |
 | **Active Target Viewport** | **Desktop-First (Laptop)** | Fixed sidebar (216px) & topbar (64px); 7/5 column balance; responsive 1366×768 base and 1920×1080 full HD |
 | **Overview Screen** | **Fully Wired** | Direct links from metric cards and risk summary to Health tabs and AI Analysis detail |
 | **Belt Identity** | **Verified** | Custom vector SVG waist-worn belt schematic with dual airbag deployment pods, ESP32 MCU housing, and MPU6050 status |
@@ -45,7 +46,7 @@
 | **6. Onboarding, profile and privacy** | 90 min | 10:30 | 4-step onboarding wizard, Profile editing, resting HR provenance, Privacy Center with local laptop processing and confirmed data deletion. Gate: all settings persist and affect behavior; data deletion stays deleted until the user explicitly begins again. | **COMPLETE** |
 | **7. Offline and integration** | 120 min | 12:30 | PWA app shell offline reload under service worker, synthetic offline context vs cached bulletins, cross-route coherence. Gate: the built app reloads with the browser offline and still runs Heat Wave, Alerts and SOS locally. Feature and dependency freeze. | **COMPLETE** |
 | **8. Visual and interaction finish** | 60 min | 13:30 | 1366×768 and 1920×1080 usability sweep, keyboard focus, contrast check, reduced-motion support, no clipping or horizontal scroll. Gate: no page requires zooming out; risk and source labels legible on projector; 6 final screenshots saved. | **COMPLETE** |
-| **9. Verification and rehearsal** | 90 min | 15:00 | Requirement matrix audit, offline reload test, 5-minute judge demo rehearsal twice, documentation (`README.md`, `DEMO_SCRIPT.md`, `VERIFICATION.md`, `FUTURE_INTEGRATION.md`). | **NEXT** |
+| **9. Verification and rehearsal** | 90 min | 15:00 | Requirement matrix audit, offline reload test, 5-minute judge demo rehearsal twice, documentation (`README.md`, `DEMO_SCRIPT.md`, `VERIFICATION.md`, `FUTURE_INTEGRATION.md`). Gate: the demonstration completes twice without repair and the traceability matrix has no silently missing required feature. | **COMPLETE** |
 
 ### Architectural Milestones & Hard Locks
 - **Hour 2:00 (End of Phase 1):** Visual direction locked. No redesigning of the shell or tokens after this point.
